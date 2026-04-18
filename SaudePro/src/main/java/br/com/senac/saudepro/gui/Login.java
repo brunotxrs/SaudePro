@@ -5,8 +5,6 @@ import br.com.senac.saudepro.util.ImageLogo;
 import br.com.senac.saudepro.util.PanelBackground;
 import br.com.senac.saudepro.util.RoundedPanel;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -23,32 +21,35 @@ public class Login extends JFrame {
     // Componentes principais
     private static final PanelBackground panelBackground = new PanelBackground();
     private RoundedPanel boxLogin;
+    private RoundedPanel userPanel;
+    private RoundedPanel passUser; 
     
     // Componentes de entrada
     private JTextField txtUser;
     private JPasswordField jpfPassword;
+    private JLabel mensageHelp;
+    private JLabel clickhere;
     private JButton buttonEnter;
 
     
     // Caminhos das imagem Icons
-    private final String _pathIconUser = "src/main/java/resources/img/user.png";
-    private final String _pathIconBlock = "src/main/java/resources/img/block.png";
-    private final String _pathIconVisibility0ff = "src/main/java/resources/img/visibility0ff.png";
+    private final  String _pathIconUser = "src/main/java/resources/img/user.png";
+    private final  String _pathIconBlock = "src/main/java/resources/img/block.png";
+    private final  String _pathIconVisibility0ff = "src/main/java/resources/img/visibility0ff.png";
     
+    /*ImageIcon _pathIconUser = new ImageIcon("src/main/java/resources/img/user.png");*/    
     // Ícones
-    private IconTextField icoUser = new IconTextField(_pathIconUser, 40, 30);
-    private IconTextField icoPassBlock = new IconTextField(_pathIconBlock, 40, 30);
-    private IconTextField iconVisibility0ff = new IconTextField(_pathIconVisibility0ff, 40, 30);
+    private final IconTextField icoUser = new IconTextField(_pathIconUser, 40, 30);
+    private final IconTextField icoPassBlock = new IconTextField(_pathIconBlock, 40, 30);
+    private final IconTextField iconVisibility0ff;
     
     // Labels de erro
     private JLabel messageUser;
     private JLabel messagePass;
     
-    // remover apos testes
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Login.class.getName());
-    
     
     public Login(){
+        this.iconVisibility0ff = new IconTextField(_pathIconVisibility0ff, 40, 30);
         initComponents();
     }
     
@@ -63,8 +64,7 @@ public class Login extends JFrame {
     private void configurationScreen(){
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("SaúdePro");
-        /*getContentPane().setLayout(new java.awt.GridBagLayout());*/
-
+        
         pack();
         setLocationRelativeTo(null);
         
@@ -93,11 +93,11 @@ public class Login extends JFrame {
         // Criar o painel da caixa (400x500)
         boxLogin.setLayout(null); // Layout absoluto para controle total
         boxLogin.setBackground(java.awt.Color.WHITE); // Cor transparente
-        boxLogin.setPreferredSize(new java.awt.Dimension(400, 400)); // mantendo o tamanho da caixa com elementos
+        boxLogin.setPreferredSize(new java.awt.Dimension(400, 500)); // mantendo o tamanho da caixa com elementos
         
         // Criar o logo com tamanho personalizado
         ImageLogo imageLogo = new ImageLogo(192, 80); // metodo de redimensionamento da imagem do Logo
-        imageLogo.setBounds(100, 20, 200, 80); // posicionamento e largura e altura
+        imageLogo.setBounds(100, 50, 200, 80); // posicionamento e largura e altura
         boxLogin.add(imageLogo); // o add ao father
         
         createInputs(); // chamando os componentes de inputs para o login
@@ -111,59 +111,82 @@ public class Login extends JFrame {
     protected void createInputs(){
         // Mensagens de erro
         messageUser = new JLabel("Usuário Inválido");
-        messageUser.setFont(new Font("Arial", Font.PLAIN, 10));
+        messageUser.setFont(new Font("Arial", Font.PLAIN, 12));
         messageUser.setForeground(Color.red);
-        messageUser.setBounds(60, 110, 100, 30);
+        messageUser.setBounds(60, 160, 100, 30);
         messageUser.setVisible(false);
-        
+
         messagePass = new JLabel("Senha Inválida");
-        messagePass.setFont(new Font("Arial", Font.PLAIN, 10));
+        messagePass.setFont(new Font("Arial", Font.PLAIN, 12));
         messagePass.setForeground(Color.red);
-        messagePass.setBounds(60, 270, 100, 30);
+        messagePass.setBounds(60, 305, 100, 30);
         messagePass.setVisible(false);
-        
-        // Campo Usuário
-        RoundedPanel userPanel = new RoundedPanel(20); // arredondamento da bordar 20
-        userPanel.setBackground(Color.WHITE); // add background Brando
-        userPanel.setRoundedBorder(Color.GRAY, 1); // metodo para cor da borda e especura da borda
-        userPanel.setBounds(50, 140, 300, 50); // posicionamento x y w h
-        
-        txtUser = new JTextField(); // atribuindo novo elemento
-        txtUser.setBorder(null); // bordar null
-        txtUser.setPreferredSize(new Dimension(245, 45)); // largura e altura
-        txtUser.setFont(new Font("Arial", Font.PLAIN, 17)); // fontes
-        
-        icoUser.setLayout(new FlowLayout(FlowLayout.LEADING, 5, 1)); // posicionamento do elemento
-        userPanel.add(icoUser); // add componente
-        userPanel.add(txtUser); // add componente
-        
-        // Campo Senha
-        RoundedPanel passUser = new RoundedPanel(20); 
+
+        // =============================================
+        // CAMPO USUÁRIO
+        // =============================================
+        userPanel = new RoundedPanel(20);
+        userPanel.setLayout(null);
+        userPanel.setBackground(Color.WHITE);
+        userPanel.setRoundedBorder(Color.GRAY, 1);
+        userPanel.setBounds(50, 190, 300, 50);
+
+        // Configurar o icoUser (IconTextField)
+        icoUser.setBounds(5, 10, 35, 30);
+
+        // Criar o txtUser
+        txtUser = new JTextField();
+        txtUser.setBorder(null);
+        txtUser.setBounds(45, 10, 245, 30);
+        txtUser.setFont(new Font("Arial", Font.PLAIN, 15));
+
+        // ADICIONAR AO PAINEL
+        userPanel.add(icoUser);
+        userPanel.add(txtUser);
+
+        // =============================================
+        // CAMPO SENHA
+        // =============================================
+        passUser = new RoundedPanel(20);
+        passUser.setLayout(null);
         passUser.setBackground(Color.WHITE);
         passUser.setRoundedBorder(Color.GRAY, 1);
-        passUser.setBounds(50, 220, 300, 50);
-        
+        passUser.setBounds(50, 259, 300, 50);
+
+        // Configurar o icoPassBlock
+        icoPassBlock.setBounds(5, 10, 35, 30);
+
+        // Configurar o campo de senha
         jpfPassword = new JPasswordField();
         jpfPassword.setBorder(null);
-        jpfPassword.setPreferredSize(new Dimension(200, 45));
-        jpfPassword.setFont(new Font("Arial", Font.PLAIN, 17));
+        jpfPassword.setBounds(45, 10, 200, 30);
+        jpfPassword.setFont(new Font("Arial", Font.PLAIN, 15));
+
+        // Ícone de visibilidade
+        iconVisibility0ff.setBounds(255, 10, 35, 30);
         
-        icoPassBlock.setLayout(new FlowLayout(FlowLayout.LEADING, 5, 1));
-        iconVisibility0ff.setLayout(new FlowLayout(FlowLayout.LEADING, 5, 1));
+        // Mensage de click aqui pra recuperar acesso
+        mensageHelp = new JLabel("Esqueceu a senha?");
+        mensageHelp.setFont(new Font("Arial", Font.PLAIN, 12));
+        mensageHelp.setForeground(Color.GRAY);
+        mensageHelp.setBounds(110, 451, 200, 30);
+        
+        clickhere = new JLabel("Clique aqui.");
+        clickhere.setFont(new Font("Arial", Font.BOLD, 12));
+        clickhere.setForeground(Color.GRAY);
+        clickhere.setBounds(220, 451, 100, 30);
         
         passUser.add(icoPassBlock);
         passUser.add(jpfPassword);
         passUser.add(iconVisibility0ff);
-        
-        
-        
+
+        boxLogin.add(clickhere);
+        boxLogin.add(mensageHelp);
         boxLogin.add(messageUser);
         boxLogin.add(messagePass);
         boxLogin.add(userPanel);
         boxLogin.add(passUser);
-        
-    }
-    
+    }    
     
     private void createButton(){
         Color greenLigth = new Color(0x7ED348);
@@ -175,32 +198,11 @@ public class Login extends JFrame {
         buttonEnter.setFont(new Font("Arial", Font.BOLD, 25));
         buttonEnter.setText("ENTRAR");
         buttonEnter.setForeground(withIce);
-        buttonEnter.setBounds(100, 300, 200, 60);
+        buttonEnter.setBounds(100, 358, 200, 60);
         
         boxLogin.add(buttonEnter);
     }
-    
-    public static void main(String[] args) {
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        
-        java.awt.EventQueue.invokeLater(() -> {
-            
-            new Login().setVisible(true);
-            
-                    
-        });
-    }
-    
-    
+   
     // =============================================
     // GETTERS para o Controller acessar os componentes
     // =============================================
@@ -209,5 +211,12 @@ public class Login extends JFrame {
     public javax.swing.JButton getButtonEnter(){return buttonEnter;}
     public javax.swing.JLabel getMessageUser(){return messageUser;}
     public javax.swing.JLabel getMessagePass(){return messagePass;}
+    public javax.swing.JLabel getMensageHelp(){return mensageHelp;}
+    public javax.swing.JLabel getClickHere(){return clickhere;}
     public RoundedPanel getBoxLogin() { return boxLogin;}
+    public RoundedPanel getUserPanel(){return userPanel;}
+    public RoundedPanel getPassUser(){return passUser;}
+    public IconTextField getIcoUser(){return icoUser;}
+    public IconTextField getIcoPassBlock(){return icoPassBlock;}
+    public IconTextField getIconVisibility0ff(){return iconVisibility0ff;}
 }
