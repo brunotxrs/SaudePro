@@ -65,6 +65,5 @@ public class RoundedPanel extends JPanel {
         
         g2.dispose();
     }
-    
-}
 
+}
