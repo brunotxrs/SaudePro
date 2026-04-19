@@ -84,9 +84,9 @@ public class Login extends JFrame {
         createBoxLogin();// chamando o boxLogin onde ha os elementos inputs
         
         getContentPane().setLayout(new java.awt.GridBagLayout()); // deixando posicionado + [centralizado] na tela
-        
-    }
     
+    }
+     
     // Metedo da caixa para LoginTst e Senha 
     protected void createBoxLogin(){
         boxLogin = new RoundedPanel(40);
