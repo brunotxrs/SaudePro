@@ -4,7 +4,9 @@ import br.com.senac.saudepro.util.IconTextField;
 import br.com.senac.saudepro.util.ImageLogo;
 import br.com.senac.saudepro.util.RoundedPanel;
 import br.com.senac.saudepro.util.ShadowPanel;
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -19,7 +21,11 @@ import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 
 /**
  * Dashboard - Lista de consultas do dia com horário e médico
@@ -39,27 +45,28 @@ public class HomeDashboard extends JFrame {
     private static RoundedPanel btnHelp; // <- btn [ Suporte ]
     private static ShadowPanel btnNewFitting; // <- btn [ Novo Encaixe ]
     private static RoundedPanel placeSearch; // <- campo de perguisar
-    private static RoundedPanel container;
+    private static RoundedPanel container; // <- panel para cards informaçoes - Nao irei precisar no Controller
+    private static RoundedPanel panelToTable; // <-  Panel para a Tabela - Nao irei precisar no Controller
     
-    private static JLabel lblInitial;
-    private static JLabel lblRegister;
-    private static JLabel lblScheduling;
-    private static JLabel lblClose;    
-    private static JLabel lblHelp;
-    private static JLabel peopleCard_1;
-    private static JLabel peopleCard_2;
-    private static JLabel professionalCard_1;
-    private static JLabel professionalCard_2;
-    private static JLabel peopleDay;
-    private static JLabel numPeoleDay;
-    private static JLabel consultDay;
-    private static JLabel numConsul;
-    private static JLabel awaitCall;
-    private static JLabel numAwit;
-    private static JLabel medics;
-    private static JLabel numMedics;
+    private static JLabel lblInitial; // - Nao irei precisar no Controller
+    private static JLabel lblRegister; // - Nao irei precisar no Controller
+    private static JLabel lblScheduling; // - Nao irei precisar no Controller
+    private static JLabel lblClose;    // - Nao irei precisar no Controller
+    private static JLabel lblHelp; // - Nao irei precisar no Controller
+    private static JLabel peopleCard_1; // - irei precisar no Controller
+    private static JLabel peopleCard_2; // -  irei precisar no Controller
+    private static JLabel professionalCard_1; // -  irei precisar no Controller
+    private static JLabel professionalCard_2; // -  irei precisar no Controller
+    private static JLabel peopleDay; // -  irei precisar no Controller
+    private static JLabel numPeoleDay;  // -  irei precisar no Controller
+    private static JLabel consultDay;  // -  irei precisar no Controller
+    private static JLabel numConsul;  // -  irei precisar no Controller
+    private static JLabel awaitCall; // -  irei precisar no Controller
+    private static JLabel numAwit; // -  irei precisar no Controller
+    private static JLabel medics; // - irei precisar no Controller
+    private static JLabel numMedics; // -  irei precisar no Controller
     
-    private static JTextField inputSearch;
+    private static JTextField inputSearch; // - rei precisar no Controller
     
     //=============================
     // Caminhos das imagem Icons
@@ -87,6 +94,10 @@ public class HomeDashboard extends JFrame {
     private static JPanel sideBarRight;
     private static JPanel bodyMain;
  
+    //=============================    
+    // Table
+    private static JTable scheduleTable; // -  irei precisar no Controller
+    
     
     //=============================    
     // Cores
@@ -237,6 +248,7 @@ public class HomeDashboard extends JFrame {
         
         componentSearch();
         componentPanelInforCards();
+        panelTable();
         
     }
     
@@ -255,7 +267,7 @@ public class HomeDashboard extends JFrame {
         // ===== CONFIG DO CONTAINER =====
         gbcS.gridx = 0;
         gbcS.gridy = 0;
-        gbcS.insets = new java.awt.Insets(25, 20, 0, 20); // Espaçamento externo (MARGEM)
+        gbcS.insets = new java.awt.Insets(5, 20, 0, 20); // Espaçamento externo (MARGEM)
         gbcS.weightx = 1; // Crescer horizontalmente
         gbcS.weighty = 0; // NÃO crescer verticalmente
         gbcS.fill = GridBagConstraints.HORIZONTAL;
@@ -280,7 +292,7 @@ public class HomeDashboard extends JFrame {
         GridBagConstraints gbcInput = new GridBagConstraints();
         gbcInput.gridx = 1;
         gbcInput.gridy = 0;
-        gbcInput.weightx = 1; // 🔥 FAZ CRESCER
+        gbcInput.weightx = 1; // FAZ CRESCER
         gbcInput.fill = GridBagConstraints.HORIZONTAL;
         gbcInput.insets = new Insets(0, 0, 0, 15);
        
@@ -301,14 +313,14 @@ public class HomeDashboard extends JFrame {
         GridBagConstraints gContainer = new GridBagConstraints();
         
         container = new RoundedPanel(20);
-        container.setBackground(Color.WHITE);
+        container.setBackground(Color.LIGHT_GRAY);
         container.setPreferredSize(new Dimension(0, 300));
         container.setLayout(gLayout);
         
         // ===== CONFIG DO CONTAINER =====
         gContainer.gridx = 0;
         gContainer.gridy = 1;
-        gContainer.insets = new java.awt.Insets(25, 20, 0, 20); // Espaçamento externo (MARGEM)
+        gContainer.insets = new java.awt.Insets(5, 20, 0, 20); // Espaçamento externo (MARGEM)
         gContainer.weightx = 1; // Crescer horizontalmente
         gContainer.weighty = 0; // NÃO crescer verticalmente
         gContainer.fill = GridBagConstraints.HORIZONTAL;
@@ -340,7 +352,7 @@ public class HomeDashboard extends JFrame {
         cardInfo(numAwit, awaitCall, o, 0, 1);
         cardInfo(numMedics, medics, al, 1, 1);
         
-        
+
     }
     
     // =====================
@@ -402,6 +414,115 @@ public class HomeDashboard extends JFrame {
         
         container.add(main, gbcMain);
     }
+    
+    // =====================
+    // Panel Tabela
+    // =====================
+    private void panelTable(){
+        GridBagConstraints gContainerTable = new GridBagConstraints();
+        
+        panelToTable = new RoundedPanel(20);
+        panelToTable.setBackground(Color.WHITE);
+        panelToTable.setPreferredSize(new Dimension(0, 250));
+        panelToTable.setLayout(new BorderLayout());
+        
+        // 🔥 ADICIONAR ESPAÇAMENTO INTERNO PARA O SCROLLPANE NÃO ENCOBRIR A BORDA
+        panelToTable.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+    
+        // ===== CONFIG DO CONTAINER =====
+        gContainerTable.gridx = 0;
+        gContainerTable.gridy = 2;
+        gContainerTable.insets = new java.awt.Insets(5, 20, 20, 20); // Espaçamento externo (MARGEM)
+        gContainerTable.weightx = 1; // Crescer horizontalmente
+        gContainerTable.weighty = 0; // NÃO crescer verticalmente
+        gContainerTable.fill = GridBagConstraints.HORIZONTAL;
+        //===============================
+        
+        // ADD COMPONENTES
+        bodyMain.add(panelToTable, gContainerTable);
+        
+        // ADD HERE COMPONENT TABLE
+        tableSchedule();
+        
+    }
+    
+    // =================
+    // Component Tabela
+    // =================
+    private void tableSchedule(){
+        
+        scheduleTable = new JTable();
+        String[] columns = {"Horário", "Paciente", "Médico", "Confirmar Chegada"} ;
+        DefaultTableModel model = new DefaultTableModel(columns, 0);
+       
+        scheduleTable = new JTable(model);
+        
+       // 🔥 CONFIGURAÇÕES PARA DEIXAR IGUAL AO DESIGN
+       scheduleTable.setRowHeight(40);
+       scheduleTable.setFont(new Font("Arial", Font.PLAIN, 14));
+       scheduleTable.setForeground(Color.BLACK);
+       scheduleTable.setBackground(Color.WHITE);
+       scheduleTable.setGridColor(new Color(230, 230, 230));
+       scheduleTable.setShowGrid(true);
+       scheduleTable.setIntercellSpacing(new Dimension(1, 1));
+
+       // Configurar cabeçalho
+       scheduleTable.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
+       scheduleTable.getTableHeader().setBackground(new Color(240, 240, 240));
+       scheduleTable.getTableHeader().setForeground(Color.BLACK);
+       scheduleTable.getTableHeader().setPreferredSize(new Dimension(0, 35));
+       
+       ((DefaultTableCellRenderer) scheduleTable.getTableHeader().getDefaultRenderer())
+        .setHorizontalAlignment(JLabel.CENTER); // Centralizar o Titulo
+
+       // Largura das colunas
+       scheduleTable.getColumnModel().getColumn(0).setPreferredWidth(80);
+       scheduleTable.getColumnModel().getColumn(1).setPreferredWidth(180);
+       scheduleTable.getColumnModel().getColumn(2).setPreferredWidth(180);
+       scheduleTable.getColumnModel().getColumn(3).setPreferredWidth(150);
+
+       // Centralizar o texto das colunas
+       DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+       centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+       scheduleTable.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
+       scheduleTable.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
+
+       // Coluna "Confirmar Chegada" com cor especial
+       scheduleTable.getColumnModel().getColumn(3).setCellRenderer(new DefaultTableCellRenderer() {
+           @Override
+           public Component getTableCellRendererComponent(JTable table, Object value,
+                   boolean isSelected, boolean hasFocus, int row, int column) {
+               Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+               String texto = value.toString();
+               if (texto.equals("Confirmado")) {
+                   setForeground(new Color(0x458C45)); // Verde
+                   setFont(new Font("Arial", Font.BOLD, 13));
+               } else if (texto.equals("Confirmar?")) {
+                   setForeground(new Color(0xE67E22)); // Laranja
+                   setFont(new Font("Arial", Font.BOLD, 13));
+               } else {
+                   setForeground(Color.GRAY);
+               }
+               setHorizontalAlignment(JLabel.CENTER);
+               return c;
+           }
+       });
+
+       // JScrollPane
+       JScrollPane scrollPane = new JScrollPane(scheduleTable);
+       scrollPane.setBorder(BorderFactory.createLineBorder(new Color(200, 200, 200), 1));
+       scrollPane.getViewport().setBackground(Color.WHITE);
+       scrollPane.setBorder(BorderFactory.createEmptyBorder());
+
+       panelToTable.add(scrollPane, BorderLayout.CENTER);
+        
+        
+        
+    } 
+    
+    
+    
     
     //=============================
     // Componente SideBar_Rigth
@@ -493,7 +614,7 @@ public class HomeDashboard extends JFrame {
     //=============================
     private void createCards(JPanel main,  JLabel u, JLabel p, int x, int y){
         
-        Color pretoTransparente = new Color(0, 0, 0, 80); // 25 = transparência
+        Color pretoTransparente = new Color(0, 0, 0, 80); //  transparência
 
         // Branco Gelo
         Color brancoGelo = new Color(0xF0F4F8);
@@ -560,7 +681,7 @@ public class HomeDashboard extends JFrame {
     // metodo pra exibiçao de teste
     //=============================    
     public static void main(String[] args) {
-        
+
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -573,5 +694,95 @@ public class HomeDashboard extends JFrame {
         }
         
         java.awt.EventQueue.invokeLater(() -> new HomeDashboard().setVisible(true));
+    }
+    
+    
+    // =============================================
+    // GETTERS para o Controller acessar os componentes
+    // =============================================
+    
+    public RoundedPanel getBtnInitial(){
+        return btnInitial;
+    }
+    
+    public RoundedPanel getBtnRegister(){
+        return btnRegister;
+    }
+    
+    public RoundedPanel getBtnScheduling(){
+        return btnScheduling;
+    }
+    
+    public RoundedPanel getBtnClose(){
+        return btnClose;
+    }
+    
+    public RoundedPanel getBtnHelp(){
+        return btnHelp;
+    }
+    
+    public ShadowPanel getBtnNewFitting(){
+        return btnNewFitting;
+    }
+    
+    public  RoundedPanel getPlaceSearch(){
+        return placeSearch;
+    }
+    
+    public JTextField getInputSearch(){
+        return inputSearch;
+    }
+    
+    public JLabel getPeopleCard(int num){
+        
+        return switch (num) {
+            case 1 -> peopleCard_1;
+            case 2 -> peopleCard_2;
+            default -> null;
+        };
+    } 
+    
+    public JLabel getProfessionalCard(int profi){
+        return switch (profi){
+            case 1 -> peopleCard_1;
+            case 2 -> peopleCard_2;
+            default -> null;
+        };
+    }
+
+    public static JLabel getPeopleDay() {
+        return peopleDay;
+    }
+
+    public static JLabel getNumPeoleDay() {
+        return numPeoleDay;
+    }
+
+    public static JLabel getConsultDay() {
+        return consultDay;
+    }
+
+    public static JLabel getNumConsul() {
+        return numConsul;
+    }
+
+    public static JLabel getAwaitCall() {
+        return awaitCall;
+    }
+
+    public static JLabel getNumAwit() {
+        return numAwit;
+    }
+
+    public static JLabel getMedics() {
+        return medics;
+    }
+
+    public static JLabel getNumMedics() {
+        return numMedics;
+    }
+    
+    public JTable getScheduleTable(){
+        return scheduleTable;
     }
 }
