@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.Font;
+import java.awt.Image;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
@@ -95,6 +96,19 @@ public class AuxiliaryMethod {
     public static void aplicateColorGray(RoundedPanel p, IconTextField iconField, ImageIcon imageIcon){
        p.setRoundedBorder(Color.GRAY, 1);
        iconField.setIcon(imageIcon);
+    }
+    
+    
+    // Metodo para carrregar icones
+    public static ImageIcon loadedIcone(String path, int width, int height) {
+        try {
+            ImageIcon icon = new ImageIcon(path);
+            Image img = icon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
+            return new ImageIcon(img);
+        } catch (Exception e) {
+            System.out.println("Erro ao carregar: " + path);
+            return new ImageIcon();
+        }
     }
     
 }
