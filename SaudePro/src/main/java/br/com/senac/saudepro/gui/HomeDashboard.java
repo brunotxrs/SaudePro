@@ -1,5 +1,6 @@
 package br.com.senac.saudepro.gui;
 
+import br.com.senac.saudepro.controller.HomeDashboardController;
 import br.com.senac.saudepro.util.IconTextField;
 import br.com.senac.saudepro.util.ImageLogo;
 import br.com.senac.saudepro.util.RoundedPanel;
@@ -177,12 +178,26 @@ public class HomeDashboard extends JFrame {
         
         panelDash.add(sideBarLeft, gbc);
         
+        // Criando os panel
+        btnInitial = new RoundedPanel(10);
+        btnRegister = new RoundedPanel(10);
+        btnScheduling = new RoundedPanel(10);
+        btnClose = new RoundedPanel(10);
+        btnHelp = new RoundedPanel(10);
+        
+        // Labels
+        lblInitial = new JLabel("Inicio");
+        lblRegister = new JLabel("Cadastro");
+        lblScheduling = new JLabel("Agendamento");
+        lblClose = new JLabel("Sair");
+        lblHelp = new JLabel("Suporte");
+        
         // add here btns
-        buttonsNavegations(btnInitial, greenColor, 143, icoInit, lblInitial, Color.WHITE,"Inicio", sideBarLeft);
-        buttonsNavegations(btnRegister, Color.WHITE, 193, icoRegis, lblRegister, Color.GRAY, "Cadastro", sideBarLeft);
-        buttonsNavegations(btnScheduling, Color.WHITE, 243, icoSched, lblScheduling, Color.GRAY, "Agendamento", sideBarLeft);
-        buttonsNavegations(btnClose, Color.WHITE, 293, icoClos, lblClose, Color.GRAY, "Sair", sideBarLeft);
-        buttonsNavegations(btnHelp, Color.WHITE, 550, icoHelp, lblHelp, Color.GRAY, "Suporte", sideBarLeft);
+        buttonsNavegations(btnInitial, greenColor, 143, icoInit, lblInitial, Color.WHITE, sideBarLeft);
+        buttonsNavegations(btnRegister, Color.WHITE, 193, icoRegis, lblRegister, Color.GRAY, sideBarLeft);
+        buttonsNavegations(btnScheduling, Color.WHITE, 243, icoSched, lblScheduling, Color.GRAY, sideBarLeft);
+        buttonsNavegations(btnClose, Color.WHITE, 293, icoClos, lblClose, Color.GRAY, sideBarLeft);
+        buttonsNavegations(btnHelp, Color.WHITE, 550, icoHelp, lblHelp, Color.GRAY, sideBarLeft);
         
         
     }
@@ -196,11 +211,10 @@ public class HomeDashboard extends JFrame {
             IconTextField iconText, 
             JLabel l, 
             Color colorFo, 
-            String msn, 
             JPanel main 
     ){
         
-        panel = new RoundedPanel(10);
+        
         panel.setLayout(null);
         panel.setBackground(colorBg);
         panel.setBorder(null);
@@ -213,7 +227,6 @@ public class HomeDashboard extends JFrame {
         iconText.setBackground(null);
         
         // criando labels
-        l = new JLabel(msn);
         l.setBorder(null);
         l.setBounds(65, 10, 200, 30);
         l.setFont(new Font("Arial", Font.BOLD, 16));
@@ -693,7 +706,13 @@ public class HomeDashboard extends JFrame {
             logger.log(java.util.logging.Level.SEVERE, null, ex);
         }
         
-        java.awt.EventQueue.invokeLater(() -> new HomeDashboard().setVisible(true));
+        java.awt.EventQueue.invokeLater(() -> {
+            HomeDashboard hd = new HomeDashboard();
+            
+            new HomeDashboardController(hd);
+            
+            hd.setVisible(true);
+        });
     }
     
     
@@ -701,39 +720,44 @@ public class HomeDashboard extends JFrame {
     // GETTERS para o Controller acessar os componentes
     // =============================================
     
-    public RoundedPanel getBtnInitial(){
-        return btnInitial;
-    }
+    public static RoundedPanel getBtnInitial(){return btnInitial;}
+
+    public static JLabel getLblInitial() {return lblInitial;}
     
-    public RoundedPanel getBtnRegister(){
-        return btnRegister;
-    }
+    public static RoundedPanel getBtnRegister(){return btnRegister;}
     
-    public RoundedPanel getBtnScheduling(){
-        return btnScheduling;
-    }
+    public static JLabel getLblRegister(){return lblRegister;}
     
-    public RoundedPanel getBtnClose(){
-        return btnClose;
-    }
+    public static RoundedPanel getBtnScheduling(){return btnScheduling;}
+
+    public static JLabel getLblScheduling() {return lblScheduling;}
     
-    public RoundedPanel getBtnHelp(){
-        return btnHelp;
-    }
+    public static RoundedPanel getBtnClose(){return btnClose;}
+
+    public static JLabel getLblClose() {return lblClose;}
     
-    public ShadowPanel getBtnNewFitting(){
+    public static RoundedPanel getBtnHelp(){return btnHelp;}
+
+    public static JLabel getLblHelp() {return lblHelp;}
+    
+    
+    public static ShadowPanel getBtnNewFitting(){
         return btnNewFitting;
     }
     
-    public  RoundedPanel getPlaceSearch(){
+    public static RoundedPanel getPlaceSearch(){
         return placeSearch;
     }
     
-    public JTextField getInputSearch(){
+    public static JTextField getInputSearch(){
         return inputSearch;
     }
     
-    public JLabel getPeopleCard(int num){
+    public IconTextField getIconSearc(){
+        return iconSearc;
+    }
+    
+    public static JLabel getPeopleCard(int num){
         
         return switch (num) {
             case 1 -> peopleCard_1;
@@ -742,7 +766,7 @@ public class HomeDashboard extends JFrame {
         };
     } 
     
-    public JLabel getProfessionalCard(int profi){
+    public static JLabel getProfessionalCard(int profi){
         return switch (profi){
             case 1 -> peopleCard_1;
             case 2 -> peopleCard_2;
