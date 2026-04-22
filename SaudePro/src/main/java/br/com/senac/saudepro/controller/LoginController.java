@@ -62,29 +62,20 @@ public class LoginController {
     }
     
     private void loadIcones() {
-        iconUserNormal = loadedIcone(PATH_USER_NORMAL, 25, 25);
-        iconUserHover = loadedIcone(PATH_USER_HOVER, 25, 25);
-        iconPassNormal = loadedIcone(PATH_PASS_NORMAL, 25, 25);
-        iconPassHover = loadedIcone(PATH_PASS_HOVER, 25, 25);
-        iconEyeNormal = loadedIcone(PATH_EYE_NORMAL, 25, 25);
-        iconEyeHover = loadedIcone(PATH_EYE_HOVER, 25, 25);
-        iconEyeVisible = loadedIcone(PATH_EYE_VISIBLE, 25, 25);
-        iconEyeVisibleHover = loadedIcone(PATH_EYE_VISIBLE_HOVER, 25, 25);
+        iconUserNormal = AuxiliaryMethod.loadedIcone(PATH_USER_NORMAL, 25, 25);
+        iconUserHover = AuxiliaryMethod.loadedIcone(PATH_USER_HOVER, 25, 25);
+        iconPassNormal = AuxiliaryMethod.loadedIcone(PATH_PASS_NORMAL, 25, 25);
+        iconPassHover = AuxiliaryMethod.loadedIcone(PATH_PASS_HOVER, 25, 25);
+        iconEyeNormal = AuxiliaryMethod.loadedIcone(PATH_EYE_NORMAL, 25, 25);
+        iconEyeHover = AuxiliaryMethod.loadedIcone(PATH_EYE_HOVER, 25, 25);
+        iconEyeVisible = AuxiliaryMethod.loadedIcone(PATH_EYE_VISIBLE, 25, 25);
+        iconEyeVisibleHover = AuxiliaryMethod.loadedIcone(PATH_EYE_VISIBLE_HOVER, 25, 25);
         
-        iconUserRed = loadedIcone(PATH_USER_RED, 25, 25);
-        iconLockRed = loadedIcone(PATH_PASS_RED, 25, 25);
+        iconUserRed = AuxiliaryMethod.loadedIcone(PATH_USER_RED, 25, 25);
+        iconLockRed = AuxiliaryMethod.loadedIcone(PATH_PASS_RED, 25, 25);
     }
     
-    private ImageIcon loadedIcone(String path, int width, int height) {
-        try {
-            ImageIcon icon = new ImageIcon(path);
-            Image img = icon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
-            return new ImageIcon(img);
-        } catch (Exception e) {
-            System.out.println("Erro ao carregar: " + path);
-            return new ImageIcon();
-        }
-    }
+    
 
     private void initController() {
         AuxiliaryMethod.setPlaceholder(viewLogin.getTxtUser(), "Usuário");
@@ -241,7 +232,7 @@ public class LoginController {
             @Override
             public void mouseClicked(MouseEvent e) {
                 AuxiliaryMethod.mostrarMensagemFlutuante(viewLogin, mes, 300, 80); // metodo auxiliar 
-
+                
             }
         });
     }
