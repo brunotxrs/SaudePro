@@ -2,7 +2,6 @@ package br.com.senac.saudepro.gui;
 
 import br.com.senac.saudepro.controller.HomeDashboardController;
 import br.com.senac.saudepro.util.IconTextField;
-import br.com.senac.saudepro.util.ImageLogo;
 import br.com.senac.saudepro.util.RoundedPanel;
 import br.com.senac.saudepro.util.ShadowPanel;
 import java.awt.BorderLayout;
@@ -19,7 +18,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
 import javax.swing.BorderFactory;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -32,28 +30,20 @@ import javax.swing.table.DefaultTableModel;
  * Dashboard - Lista de consultas do dia com horário e médico
  * @author bruno-teixeira
  */
-public class HomeDashboard extends JFrame {
+public class HomeDashboard extends BaseView {
     // - Gerar comentario pra isso! 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(HomeDashboard.class.getName());
     
     //=============================
     // Componentes principais - Serem Usados no [ CONTROLLER ]
     private static JPanel panelDash;
-    private static RoundedPanel btnInitial; // <- btn [ Inicio ]
-    private static RoundedPanel btnRegister; // <- btn [ Cadastro ]
-    private static RoundedPanel btnScheduling; // <- btn [ Agendamento ]
-    private static RoundedPanel btnClose; // <- btn [ Sair ]
-    private static RoundedPanel btnHelp; // <- btn [ Suporte ]
+
     private static ShadowPanel btnNewFitting; // <- btn [ Novo Encaixe ]
     private static RoundedPanel placeSearch; // <- campo de perguisar
     private static RoundedPanel container; // <- panel para cards informaçoes - Nao irei precisar no Controller
     private static RoundedPanel panelToTable; // <-  Panel para a Tabela - Nao irei precisar no Controller
     
-    private static JLabel lblInitial; // - Nao irei precisar no Controller
-    private static JLabel lblRegister; // - Nao irei precisar no Controller
-    private static JLabel lblScheduling; // - Nao irei precisar no Controller
-    private static JLabel lblClose;    // - Nao irei precisar no Controller
-    private static JLabel lblHelp; // - Nao irei precisar no Controller
+
     private static JLabel peopleCard_1; // - irei precisar no Controller
     private static JLabel peopleCard_2; // -  irei precisar no Controller
     private static JLabel professionalCard_1; // -  irei precisar no Controller
@@ -71,29 +61,21 @@ public class HomeDashboard extends JFrame {
     
     //=============================
     // Caminhos das imagem Icons
-    private final String _parthIconInitial = "src/main/java/resources/img/icoInitial.png";
-    private final String _parthIconRegister = "src/main/java/resources/img/registerIco.png";
-    private final String _parthIconScheduling = "src/main/java/resources/img/calendarIco.png";
-    private final String _parthIconClose = "src/main/java/resources/img/closeIco.png";
-    private final String _parthIconHelp = "src/main/java/resources/img/helpIco.png";
-    private final String _parthIconAdd = "src/main/java/resources/img/addBlack.png";
-    private final String _parthIconSearch = "src/main/java/resources/img/searchIco.png";
     
+    private static final String _parthIconAdd = "src/main/java/resources/img/addBlack.png";
+    private static final String _parthIconSearch = "src/main/java/resources/img/searchIco.png";
+   
     //=============================    
     // Ícones
-    private final IconTextField icoInit = new IconTextField(_parthIconInitial, 30, 30);
-    private final IconTextField icoRegis = new IconTextField(_parthIconRegister, 30, 30);    
-    private final IconTextField icoSched = new IconTextField(_parthIconScheduling, 30, 30);
-    private final IconTextField icoClos = new IconTextField(_parthIconClose, 30, 30);
-    private final IconTextField icoHelp = new IconTextField(_parthIconHelp, 30, 30);
+    
     private final IconTextField icoAdd = new IconTextField(_parthIconAdd, 30, 30);
     private final IconTextField iconSearc = new IconTextField(_parthIconSearch, 30, 30);
     
     //=============================    
     // side Bars
     private static JPanel sideBarLeft;
-    private static JPanel sideBarRight;
-    private static JPanel bodyMain;
+    /* private static JPanel sideBarRight;
+    private static JPanel bodyMain;*/
  
     //=============================    
     // Table
@@ -120,152 +102,57 @@ public class HomeDashboard extends JFrame {
     // Componente de inicializaçao de todos os componentes
     //=============================    
     private void initComponents(){
-        configurationFrame(); // instaciando o metodo.
+        String title = "Dashboard - SaúdePro";
+        configurationFrame(title); // instaciando o metodo.
         
-        configurationPanelScreen(); // chamando o panel
+        panelDash = new JPanel();
+        
+        configurationPanelScreen(panelDash); // chamando o panel
     }
     //=============================    
     // configuraçao o Jrame
     //=============================    
-    private void configurationFrame(){
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Dashboard - SaúdePro");
-        setSize(1440, 900); // largura e altura
-       
-        setLocationRelativeTo(null);
+    @Override
+    protected void configurationFrame(String title) {
+        super.configurationFrame(title);
+        
     }
+    
     
     //=============================    
     // criando o Painel
     //=============================    
-    private void configurationPanelScreen(){
-        panelDash = new JPanel();
-        panelDash.setBackground(Color.LIGHT_GRAY);
-        panelDash.setLayout(gLayout);
+    @Override    
+    protected void configurationPanelScreen(JPanel panel){
+        super.configurationPanelScreen(panel); 
         
-        setContentPane(panelDash);
+        createSideBarLeft(panelDash);
         
-        createSideBarLeft();
-        
-        createBodyMain();
-        
-        createSideBarRigth();
+        createBodyMain(panelDash);
+        createSideBarRigth(panelDash);
     }
+
     //=============================
     // Componente - SideBar_Left
     //=============================
-    private void createSideBarLeft(){
-        // grydbag ajustavel 
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0; // coluna 0
-        gbc.gridy = 0; // linha 0
-        gbc.weightx = 0; // não expande horizontalmente
-        gbc.weighty = 1; // ocupa toda altura disponível
-        gbc.fill = GridBagConstraints.VERTICAL;
+    @Override    
+    protected void createSideBarLeft(JPanel panel){
+        super.createSideBarLeft(panel); 
+    }
 
-        // crinado o side bar left
-        sideBarLeft = new JPanel();
-        sideBarLeft.setLayout(null); // Layout absoluto para controle total
-        sideBarLeft.setBackground(Color.WHITE);
-        sideBarLeft.setPreferredSize(new java.awt.Dimension(300, 0));
-        
-        
-        // Criar o logo com tamanho personalizado
-        ImageLogo logo = new ImageLogo(144, 60);
-        logo.setBounds(78, 40, 144, 60);
-        
-        sideBarLeft.add(logo); // add componente
-        
-        panelDash.add(sideBarLeft, gbc);
-        
-        // Criando os panel
-        btnInitial = new RoundedPanel(10);
-        btnRegister = new RoundedPanel(10);
-        btnScheduling = new RoundedPanel(10);
-        btnClose = new RoundedPanel(10);
-        btnHelp = new RoundedPanel(10);
-        
-        // Labels
-        lblInitial = new JLabel("Inicio");
-        lblRegister = new JLabel("Cadastro");
-        lblScheduling = new JLabel("Agendamento");
-        lblClose = new JLabel("Sair");
-        lblHelp = new JLabel("Suporte");
-        
-        // add here btns
-        buttonsNavegations(btnInitial, greenColor, 143, icoInit, lblInitial, Color.WHITE, sideBarLeft);
-        buttonsNavegations(btnRegister, Color.WHITE, 193, icoRegis, lblRegister, Color.GRAY, sideBarLeft);
-        buttonsNavegations(btnScheduling, Color.WHITE, 243, icoSched, lblScheduling, Color.GRAY, sideBarLeft);
-        buttonsNavegations(btnClose, Color.WHITE, 293, icoClos, lblClose, Color.GRAY, sideBarLeft);
-        buttonsNavegations(btnHelp, Color.WHITE, 550, icoHelp, lblHelp, Color.GRAY, sideBarLeft);
-        
-        
-    }
-    //=============================    
-    // metodo reaprovetavel pra criar btn navegations - Component Sidebar_Left
-    //=============================
-    private void buttonsNavegations(
-            RoundedPanel panel, 
-            Color colorBg, 
-            int heigth, 
-            IconTextField iconText, 
-            JLabel l, 
-            Color colorFo, 
-            JPanel main 
-    ){
-        
-        
-        panel.setLayout(null);
-        panel.setBackground(colorBg);
-        panel.setBorder(null);
-        panel.setBounds(0, heigth, 300, 50);
-        
-        
-        
-        // Configurar o ico (IconTextField)
-        iconText.setBounds(25, 10, 30, 30);
-        iconText.setBackground(null);
-        iconText.setLayout(new GridBagLayout());
-        
-        // criando labels
-        l.setBorder(null);
-        l.setBounds(65, 10, 200, 30);
-        l.setFont(new Font("Arial", Font.BOLD, 16));
-        l.setForeground(colorFo);
-        
-        // ADICIONAR AO PAINEL
-        panel.add(iconText);
-        panel.add(l);
-        
-        
-        main.add(panel);
-        
-    }
-   
     //=============================
     //Componente Main
-    //=============================    
-    private void createBodyMain(){
-        // grydbag ajustavel 
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1; // coluna 1
-        gbc.gridy = 0; // linha 0
-        gbc.weightx = 1; // expande horizontalmente
-        gbc.weighty = 1; // ocupa toda altura disponível
-        gbc.fill = GridBagConstraints.BOTH;
+    //=============================
 
-        bodyMain = new JPanel();
-        bodyMain.setLayout(gLayout); // Layout absoluto para controle total
-        bodyMain.setBackground(Color.LIGHT_GRAY);
-        
-        panelDash.add(bodyMain, gbc);
+    @Override
+    protected void createBodyMain(JPanel panel) {
+        super.createBodyMain(panel); 
         
         componentSearch();
         componentPanelInforCards();
         panelTable();
-        
     }
-    
+        
     //=============================
     // Metodo de Search
     //=============================
@@ -537,27 +424,15 @@ public class HomeDashboard extends JFrame {
     } 
     
     
-    
-    
     //=============================
     // Componente SideBar_Rigth
-    //=============================    
-    private void createSideBarRigth(){
-        // grydbag ajustavel 
-        gbc = new GridBagConstraints();
-        gbc.gridx = 2; // coluna 2
-        gbc.gridy = 0; // linha 0
-        gbc.weightx = 0; // não expande horizontalmente
-        gbc.weighty = 1; // ocupa toda altura disponível
-        gbc.fill = GridBagConstraints.VERTICAL;
+    //============================= 
+    
+    
+    @Override
+    protected void createSideBarRigth(JPanel panel){
+        super.createSideBarRigth(panel);
         
-        // crinado o side bar Rigth
-        sideBarRight = new JPanel();
-        sideBarRight.setLayout(null); // Layout absoluto para controle total
-        sideBarRight.setBackground(Color.WHITE);
-        sideBarRight.setPreferredSize(new java.awt.Dimension(300, 0));
-        
-        panelDash.add(sideBarRight, gbc);
         
         // add more components
         showDateActual();
@@ -571,8 +446,8 @@ public class HomeDashboard extends JFrame {
         Color boxShadow = new Color(0, 0, 0, 10); // cor com nivel de transparencia
         btnNewFitting = new ShadowPanel(8, 80, boxShadow);
         newFitting(btnNewFitting);
-        
     }
+
     
     //=============================    
     // criando metodo pra exibiçao da Data - Component Sidebar_Rigth
@@ -723,28 +598,7 @@ public class HomeDashboard extends JFrame {
     // =============================================
     // GETTERS para o Controller acessar os componentes
     // =============================================
-    
-    public static RoundedPanel getBtnInitial(){return btnInitial;}
-
-    public static JLabel getLblInitial() {return lblInitial;}
-    
-    public static RoundedPanel getBtnRegister(){return btnRegister;}
-    
-    public static JLabel getLblRegister(){return lblRegister;}
-    
-    public static RoundedPanel getBtnScheduling(){return btnScheduling;}
-
-    public static JLabel getLblScheduling() {return lblScheduling;}
-    
-    public static RoundedPanel getBtnClose(){return btnClose;}
-
-    public static JLabel getLblClose() {return lblClose;}
-    
-    public static RoundedPanel getBtnHelp(){return btnHelp;}
-
-    public static JLabel getLblHelp() {return lblHelp;}
-    
-    
+        
     public static ShadowPanel getBtnNewFitting(){
         return btnNewFitting;
     }
@@ -757,32 +611,22 @@ public class HomeDashboard extends JFrame {
         return inputSearch;
     }
     
-    public String getAllParthIcons(int num){
+    public String getAllParthIconsDash(int num){
         
         return switch (num){
-            case 1 -> _parthIconInitial;
-            case 2 -> _parthIconRegister;
-            case 3 -> _parthIconScheduling;
-            case 4 -> _parthIconClose;
-            case 5 -> _parthIconHelp;
-            case 6 -> _parthIconAdd;
-            case 7 -> _parthIconSearch;
+            case 1 -> _parthIconAdd;
+            case 2 -> _parthIconSearch;
             default -> null;
         };
     }
     
     
     // metodo para pegar todos os icons e reduzir code 
-    public IconTextField getAllIncons(int num){
+    public IconTextField getAllInconsDash(int num){
         
         return switch (num){
-            case 1 -> icoInit;
-            case 2 -> icoRegis;
-            case 3 -> icoSched;
-            case 4 -> icoClos;
-            case 5 -> icoHelp;
-            case 6 -> icoAdd;
-            case 7 -> iconSearc;    
+            case 1 -> icoAdd;
+            case 2 -> iconSearc;   
             default -> null;
                 
         };
