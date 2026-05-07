@@ -5,11 +5,14 @@ import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.Timer;
 
@@ -20,6 +23,7 @@ import javax.swing.Timer;
 public class AuxiliaryMethod {
     
     private static Dialog dialog;
+    private static JPanel selectedPanel = null;
     
     /**
      *
@@ -109,6 +113,60 @@ public class AuxiliaryMethod {
             System.out.println("Erro ao carregar: " + path);
             return new ImageIcon();
         }
+    }
+    
+    public static void aplcateHoverInBtns(JPanel panel, IconTextField field, ImageIcon imgNormal, ImageIcon imgHover, Color h, Color n, Color c){
+        
+        if(panel == null) return;
+        
+        // ========== HOVER ==========
+        panel.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mouseEntered(MouseEvent e){
+                // Se não for o botão selecionado, aplica hover
+                if(selectedPanel != panel){
+                    field.setIcon(imgHover);
+                    
+                    panel.setBackground(h);
+                    panel.repaint();
+                }
+            }
+            
+            @Override
+            public void mouseExited(MouseEvent e){
+                if(selectedPanel != panel){
+                    field.setIcon(imgNormal);
+                    panel.setBackground(n);
+                    panel.repaint();
+                }
+            }
+            
+        });
+        
+        // ========== CLIQUE ==========
+        panel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e){
+                //panel.setBackground(c);
+                btnSelected(panel, n, c);
+                field.setIcon(imgHover);
+            }
+        });
+        
+    }
+    
+    
+    private static void btnSelected(JPanel jp,  Color n, Color c){
+        
+        if(jp != null){
+            jp.setBackground(n);
+            jp.repaint();
+        }
+        
+        selectedPanel = jp;
+        jp.setBackground(c);
+        jp.repaint();
+        
     }
     
 }
