@@ -3,7 +3,6 @@ package br.com.senac.saudepro.gui;
 import br.com.senac.saudepro.util.IconTextField;
 import br.com.senac.saudepro.util.ImageLogo;
 import br.com.senac.saudepro.util.RoundedPanel;
-import br.com.senac.saudepro.util.ShadowPanel;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
@@ -226,8 +225,6 @@ public abstract class BaseView extends JFrame {
         sideBarRight.setPreferredSize(new java.awt.Dimension(300, 0));
         
         panel.add(sideBarRight, gbc);
-        
-        
         
     }
     
