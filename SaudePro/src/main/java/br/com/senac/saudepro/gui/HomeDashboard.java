@@ -76,7 +76,7 @@ public class HomeDashboard extends JFrame {
     private final String _parthIconScheduling = "src/main/java/resources/img/calendarIco.png";
     private final String _parthIconClose = "src/main/java/resources/img/closeIco.png";
     private final String _parthIconHelp = "src/main/java/resources/img/helpIco.png";
-    private final String _parthIconAdd = "src/main/java/resources/img/addIco.png";
+    private final String _parthIconAdd = "src/main/java/resources/img/addBlack.png";
     private final String _parthIconSearch = "src/main/java/resources/img/searchIco.png";
     
     //=============================    
@@ -86,7 +86,7 @@ public class HomeDashboard extends JFrame {
     private final IconTextField icoSched = new IconTextField(_parthIconScheduling, 30, 30);
     private final IconTextField icoClos = new IconTextField(_parthIconClose, 30, 30);
     private final IconTextField icoHelp = new IconTextField(_parthIconHelp, 30, 30);
-    private final IconTextField icoAdd = new IconTextField(_parthIconAdd, 40, 50);
+    private final IconTextField icoAdd = new IconTextField(_parthIconAdd, 30, 30);
     private final IconTextField iconSearc = new IconTextField(_parthIconSearch, 30, 30);
     
     //=============================    
@@ -225,6 +225,7 @@ public class HomeDashboard extends JFrame {
         // Configurar o ico (IconTextField)
         iconText.setBounds(25, 10, 30, 30);
         iconText.setBackground(null);
+        iconText.setLayout(new GridBagLayout());
         
         // criando labels
         l.setBorder(null);
@@ -276,6 +277,7 @@ public class HomeDashboard extends JFrame {
         placeSearch.setBackground(Color.WHITE);
         placeSearch.setPreferredSize(new Dimension(0, 56)); // altura fixa
         placeSearch.setLayout(gLayout);
+        placeSearch.setBorder(null);
 
         // ===== CONFIG DO CONTAINER =====
         gbcS.gridx = 0;
@@ -564,7 +566,11 @@ public class HomeDashboard extends JFrame {
         createCards(sideBarRight, peopleCard_2, professionalCard_2, 20, 314);
         
         // Componente Novo Encaixe
-        newFitting();
+        
+        // Color for shadow
+        Color boxShadow = new Color(0, 0, 0, 10); // cor com nivel de transparencia
+        btnNewFitting = new ShadowPanel(8, 80, boxShadow);
+        newFitting(btnNewFitting);
         
     }
     
@@ -664,19 +670,17 @@ public class HomeDashboard extends JFrame {
     //=============================    
     // Elemento [ Novo Encaixe ] - Component Sidebar_Rigth
     //=============================
-    private void newFitting(){
-        // Color for shadow
-        Color boxShadow = new Color(0, 0, 0, 10); // cor com nivel de transparencia
+    private void newFitting(ShadowPanel shadowPanel){
         
-        btnNewFitting = new ShadowPanel(8, 80, boxShadow);
         
-        btnNewFitting.setLayout(gLayout);
-        btnNewFitting.setBounds(115, 500, 80, 80);
-        btnNewFitting.setBackground(greenColor);
+        shadowPanel.setLayout(gLayout);
+        shadowPanel.setBounds(115, 500, 80, 80);
+        shadowPanel.setBackground(Color.WHITE);
         
-        icoAdd.setBounds(0, 0, 40, 50);
+        icoAdd.setPreferredSize(new Dimension(40, 50));
         icoAdd.setBackground(null);
-        btnNewFitting.add(icoAdd);
+        
+        shadowPanel.add(icoAdd);
         
         JLabel label = new JLabel("Novo Encaixe");
         label.setFont(new Font("Arial", Font.PLAIN, 18));
@@ -685,7 +689,7 @@ public class HomeDashboard extends JFrame {
         label.setHorizontalAlignment(JLabel.CENTER);
         
 
-        sideBarRight.add(btnNewFitting);
+        sideBarRight.add(shadowPanel);
         sideBarRight.add(label);
     }
 
@@ -753,8 +757,36 @@ public class HomeDashboard extends JFrame {
         return inputSearch;
     }
     
-    public IconTextField getIconSearc(){
-        return iconSearc;
+    public String getAllParthIcons(int num){
+        
+        return switch (num){
+            case 1 -> _parthIconInitial;
+            case 2 -> _parthIconRegister;
+            case 3 -> _parthIconScheduling;
+            case 4 -> _parthIconClose;
+            case 5 -> _parthIconHelp;
+            case 6 -> _parthIconAdd;
+            case 7 -> _parthIconSearch;
+            default -> null;
+        };
+    }
+    
+    
+    // metodo para pegar todos os icons e reduzir code 
+    public IconTextField getAllIncons(int num){
+        
+        return switch (num){
+            case 1 -> icoInit;
+            case 2 -> icoRegis;
+            case 3 -> icoSched;
+            case 4 -> icoClos;
+            case 5 -> icoHelp;
+            case 6 -> icoAdd;
+            case 7 -> iconSearc;    
+            default -> null;
+                
+        };
+        
     }
     
     public static JLabel getPeopleCard(int num){
