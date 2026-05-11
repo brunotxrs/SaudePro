@@ -22,7 +22,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
@@ -39,7 +38,6 @@ public class HomeDashboard extends BaseView {
     private static JPanel panelDash;
 
     private static ShadowPanel btnNewFitting; // <- btn [ Novo Encaixe ]
-    private static RoundedPanel placeSearch; // <- campo de perguisar
     private static RoundedPanel container; // <- panel para cards informaçoes - Nao irei precisar no Controller
     private static RoundedPanel panelToTable; // <-  Panel para a Tabela - Nao irei precisar no Controller
     
@@ -57,30 +55,16 @@ public class HomeDashboard extends BaseView {
     private static JLabel medics; // - irei precisar no Controller
     private static JLabel numMedics; // -  irei precisar no Controller
     
-    private static JTextField inputSearch; // - rei precisar no Controller
-    
     //=============================
     // Caminhos das imagem Icons
-    
     private static final String _parthIconAdd = "src/main/java/resources/img/addBlack.png";
-    private static final String _parthIconSearch = "src/main/java/resources/img/searchIco.png";
-   
     //=============================    
     // Ícones
-    
     private final IconTextField icoAdd = new IconTextField(_parthIconAdd, 30, 30);
-    private final IconTextField iconSearc = new IconTextField(_parthIconSearch, 30, 30);
     
-    //=============================    
-    // side Bars
-    private static JPanel sideBarLeft;
-    /* private static JPanel sideBarRight;
-    private static JPanel bodyMain;*/
- 
     //=============================    
     // Table
     private static JTable scheduleTable; // -  irei precisar no Controller
-    
     
     //=============================    
     // Cores
@@ -156,62 +140,17 @@ public class HomeDashboard extends BaseView {
     //=============================
     // Metodo de Search
     //=============================
-    private void componentSearch(){
-        GridBagConstraints gbcS = new GridBagConstraints();
-        
-        // ==== CRIANDO CONTAINER =========
-        placeSearch = new RoundedPanel(30);
-        placeSearch.setBackground(Color.WHITE);
-        placeSearch.setPreferredSize(new Dimension(0, 56)); // altura fixa
-        placeSearch.setLayout(gLayout);
-        placeSearch.setBorder(null);
-
-        // ===== CONFIG DO CONTAINER =====
-        gbcS.gridx = 0;
-        gbcS.gridy = 0;
-        gbcS.insets = new java.awt.Insets(5, 20, 0, 20); // Espaçamento externo (MARGEM)
-        gbcS.weightx = 1; // Crescer horizontalmente
-        gbcS.weighty = 0; // NÃO crescer verticalmente
-        gbcS.fill = GridBagConstraints.HORIZONTAL;
-        // ======================================
-        
-        
-        // ===== ICON =====
-        GridBagConstraints gbcIcon = new GridBagConstraints();
-        gbcIcon.gridx = 0;
-        gbcIcon.gridy = 0;
-        gbcIcon.insets = new Insets(0, 15, 0, 10); // espaçamento interno
-        gbcIcon.anchor = GridBagConstraints.WEST;
-        
-        
-        // ===== INPUT =====
-        inputSearch = new JTextField();
-        inputSearch.setBorder(null);
-        inputSearch.setFont(new Font("Arial", Font.PLAIN, 18));
-        inputSearch.setHorizontalAlignment(JTextField.CENTER);
-
-        
-        GridBagConstraints gbcInput = new GridBagConstraints();
-        gbcInput.gridx = 1;
-        gbcInput.gridy = 0;
-        gbcInput.weightx = 1; // FAZ CRESCER
-        gbcInput.fill = GridBagConstraints.HORIZONTAL;
-        gbcInput.insets = new Insets(0, 0, 0, 15);
-       
-        // ======================
-        
-        // ADD COMPONENTES
-        placeSearch.add(iconSearc, gbcIcon);
-        placeSearch.add(inputSearch, gbcInput);
-        
-        bodyMain.add(placeSearch, gbcS);
+    @Override    
+    protected void componentSearch(){
+        super.componentSearch(); 
 
     }
+
     
     //=============================
     // Panel dos Cards Informativos
     //=============================
-    private void componentPanelInforCards(){
+    private void componentPanelInforCards() {
         GridBagConstraints gContainer = new GridBagConstraints();
         
         container = new RoundedPanel(20);
@@ -253,8 +192,6 @@ public class HomeDashboard extends BaseView {
         cardInfo(numConsul, consultDay, a, 1, 0);
         cardInfo(numAwit, awaitCall, o, 0, 1);
         cardInfo(numMedics, medics, al, 1, 1);
-        
-
     }
     
     // =====================
@@ -427,13 +364,10 @@ public class HomeDashboard extends BaseView {
     //=============================
     // Componente SideBar_Rigth
     //============================= 
-    
-    
     @Override
     protected void createSideBarRigth(JPanel panel){
         super.createSideBarRigth(panel);
-        
-        
+    
         // add more components
         showDateActual();
         
@@ -603,19 +537,10 @@ public class HomeDashboard extends BaseView {
         return btnNewFitting;
     }
     
-    public static RoundedPanel getPlaceSearch(){
-        return placeSearch;
-    }
-    
-    public static JTextField getInputSearch(){
-        return inputSearch;
-    }
-    
     public String getAllParthIconsDash(int num){
         
         return switch (num){
             case 1 -> _parthIconAdd;
-            case 2 -> _parthIconSearch;
             default -> null;
         };
     }
@@ -626,7 +551,6 @@ public class HomeDashboard extends BaseView {
         
         return switch (num){
             case 1 -> icoAdd;
-            case 2 -> iconSearc;   
             default -> null;
                 
         };
