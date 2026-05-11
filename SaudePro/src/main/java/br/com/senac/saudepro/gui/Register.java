@@ -1,7 +1,5 @@
 package br.com.senac.saudepro.gui;
 
-import br.com.senac.saudepro.util.IconTextField;
-import br.com.senac.saudepro.util.ImageLogo;
 import br.com.senac.saudepro.util.RoundedPanel;
 import br.com.senac.saudepro.util.ShadowPanel;
 import java.awt.Color;
@@ -11,67 +9,57 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.HeadlessException;
 import java.awt.Insets;
-import javax.swing.BorderFactory;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 /**
  * Register - view area para registro de pacientes
  * @author bruno-teixeira
  */
-public class Register extends JFrame {
+public class Register extends BaseView {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Register.class.getName());
     
     //=============================
     // Componentes principais - Serem Usados no [ CONTROLLER ]
     private static JPanel panelRegister;
-    private static RoundedPanel btnInitial; // <- btn [ Inicio ]
-    private static RoundedPanel btnRegister; // <- btn [ Cadastro ]
-    private static RoundedPanel btnScheduling; // <- btn [ Agendamento ]
-    private static RoundedPanel btnClose; // <- btn [ Sair ]
-    private static RoundedPanel btnHelp; // <- btn [ Suporte ]
-    private static ShadowPanel btnNewFitting; // <- btn [ Novo Encaixe ]
-    private static RoundedPanel placeSearch; // <- campo de perguisar
-    private static RoundedPanel container; // <- panel para cards informaçoes - Nao irei precisar no Controller
     
-    private static JLabel lblInitial; // - Nao irei precisar no Controller
-    private static JLabel lblRegister; // - Nao irei precisar no Controller
-    private static JLabel lblScheduling; // - Nao irei precisar no Controller
-    private static JLabel lblClose;    // - Nao irei precisar no Controller
-    private static JLabel lblHelp; // - Nao irei precisar no Controller
+    private static RoundedPanel container; // <- panel para cards informaçoes - Nao irei precisar no Controller*/
+    private static RoundedPanel containerButtons;
+    private static RoundedPanel cont;
+    
+    
+    private static RoundedPanel panName;
+    private static JTextField inputName;
+    private static RoundedPanel panCpf;
+    private static JTextField inputCpf;
+    private static RoundedPanel panDate;
+    private static JTextField inputDate;
+    
+    private static RoundedPanel panPhone;
+    private static JTextField inputPhone;
+    private static RoundedPanel panE_mail;
+    private static JTextField inputE_mail;
+    private static RoundedPanel panDetails;
+    private static JTextArea inputDetails;
+
+
+    private static RoundedPanel panBtnCadastrar;
+    private static JLabel lblCadastrar;
+    private static RoundedPanel panBtnAtualizar;
+    private static JLabel lblAtualizar;   
+    private static RoundedPanel panBtnDeletar;
+    private static JLabel lblDeletar;
+
+    
+    
     private static JLabel peopleCard_1; // - irei precisar no Controller
     private static JLabel peopleCard_2; // -  irei precisar no Controller
-    
-    private static JTextField inputSearch; // - rei precisar no Controller
-    
-    //=============================
-    // Caminhos das imagem Icons
-    private final String _parthIconInitial = "src/main/java/resources/img/icoInitialNormal.png";
-    private final String _parthIconRegister = "src/main/java/resources/img/icoRegisterHover.png";
-    private final String _parthIconScheduling = "src/main/java/resources/img/calendarIco.png";
-    private final String _parthIconClose = "src/main/java/resources/img/closeIco.png";
-    private final String _parthIconHelp = "src/main/java/resources/img/helpIco.png";
-    private final String _parthIconAdd = "src/main/java/resources/img/addBlack.png";
-    private final String _parthIconSearch = "src/main/java/resources/img/searchIco.png";
-    
-    //=============================    
-    // Ícones
-    private final IconTextField icoInit = new IconTextField(_parthIconInitial, 30, 30);
-    private final IconTextField icoRegis = new IconTextField(_parthIconRegister, 30, 30);    
-    private final IconTextField icoSched = new IconTextField(_parthIconScheduling, 30, 30);
-    private final IconTextField icoClos = new IconTextField(_parthIconClose, 30, 30);
-    private final IconTextField icoHelp = new IconTextField(_parthIconHelp, 30, 30);
-    private final IconTextField icoAdd = new IconTextField(_parthIconAdd, 30, 30);
-    private final IconTextField iconSearc = new IconTextField(_parthIconSearch, 30, 30);
-    
-    
-    //=============================    
-    // side Bars
-    private static JPanel sideBarLeft;
-    private static JPanel sideBarRight;
-    private static JPanel bodyMain;
+    private static JLabel peopleCard_3; // - irei precisar no Controller
+    private static JLabel peopleCard_4; // -  irei precisar no Controller
+    private static JLabel peopleCard_5; // - irei precisar no Controller
     
     private static final GridBagLayout gLayout = new GridBagLayout();
     private static GridBagConstraints gbc;
@@ -80,7 +68,6 @@ public class Register extends JFrame {
     //=============================    
     // Cores
     private final Color greenColor = new Color(0x458C45);
-
     
     public Register() throws HeadlessException {
     
@@ -88,217 +75,81 @@ public class Register extends JFrame {
     }
     
     private void initComponents(){
-        configurationFrame();
+        String title = "Registro - SaúdePro";
         
-        configurationPanelScreen();
+        configurationFrame(title);
+        
+        panelRegister = new JPanel();
+        
+        configurationPanelScreen(panelRegister);
     }
     
     //=============================    
     // configuraçao o Jrame
     //=============================
-    private void configurationFrame(){
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Registro - SaúdePro");
-        setSize(1440, 900);
-        
-        setLocationRelativeTo(null);
+    
+    @Override
+    protected void configurationFrame(String title){
+        super.configurationFrame(title); 
     }
-    
-    
+
     //=============================    
     // criando o Painel
     //=============================
-    private void configurationPanelScreen(){
+    
+    @Override
+    protected void configurationPanelScreen(JPanel panel){
+
+        super.configurationPanelScreen(panel);
         
-        panelRegister = new JPanel();
-        panelRegister.setBackground(Color.LIGHT_GRAY);
-        panelRegister.setLayout(gLayout);
+        createSideBarLeft(panelRegister);
         
-        setContentPane(panelRegister);
+        createBodyMain(panelRegister);
         
-        createSideBarLeft();
-        
-        createBodyMain();
-        
-        createSideBarRigth();
+        createSideBarRigth(panelRegister);
+
     }
     
     
     //=============================
     // Componente - SideBar_Left
     //=============================
-    private void createSideBarLeft(){
-        // grydbag ajustavel 
-        gbc = new GridBagConstraints();
-        gbc.gridx = 0; // coluna 0
-        gbc.gridy = 0; // linha 0
-        gbc.weightx = 0; // não expande horizontalmente
-        gbc.weighty = 1; // ocupa toda altura disponível
-        gbc.fill = GridBagConstraints.VERTICAL;
-
-        // crinado o side bar left
-        sideBarLeft = new JPanel();
-        sideBarLeft.setLayout(null); // Layout absoluto para controle total
-        sideBarLeft.setBackground(Color.WHITE);
-        sideBarLeft.setPreferredSize(new java.awt.Dimension(300, 0));
-        
-        
-        // Criar o logo com tamanho personalizado
-        ImageLogo logo = new ImageLogo(144, 60);
-        logo.setBounds(78, 40, 144, 60);
-        
-        sideBarLeft.add(logo); // add componente
-        
-        panelRegister.add(sideBarLeft, gbc);
-        
-        // Criando os panel
-        btnInitial = new RoundedPanel(10);
-        btnRegister = new RoundedPanel(10);
-        btnScheduling = new RoundedPanel(10);
-        btnClose = new RoundedPanel(10);
-        btnHelp = new RoundedPanel(10);
-        
-        // Labels
-        lblInitial = new JLabel("Inicio");
-        lblRegister = new JLabel("Cadastro");
-        lblScheduling = new JLabel("Agendamento");
-        lblClose = new JLabel("Sair");
-        lblHelp = new JLabel("Suporte");
-        
-        // add here btns
-        buttonsNavegations(btnInitial, Color.WHITE, 143, icoInit, lblInitial, Color.GRAY, sideBarLeft);
-        buttonsNavegations(btnRegister, greenColor, 193, icoRegis, lblRegister, Color.WHITE, sideBarLeft);
-        buttonsNavegations(btnScheduling, Color.WHITE, 243, icoSched, lblScheduling, Color.GRAY, sideBarLeft);
-        buttonsNavegations(btnClose, Color.WHITE, 293, icoClos, lblClose, Color.GRAY, sideBarLeft);
-        buttonsNavegations(btnHelp, Color.WHITE, 550, icoHelp, lblHelp, Color.GRAY, sideBarLeft);
-        
+    @Override
+    protected void createSideBarLeft(JPanel panel){
+        super.createSideBarLeft(panel);
         
     }
-    //=============================    
-    // metodo reaprovetavel pra criar btn navegations - Component Sidebar_Left
+
     //=============================
-    private void buttonsNavegations(
-            RoundedPanel panel, 
-            Color colorBg, 
-            int heigth, 
-            IconTextField iconText, 
-            JLabel l, 
-            Color colorFo, 
-            JPanel main 
-    ){
-        
-        
-        panel.setLayout(null);
-        panel.setBackground(colorBg);
-        panel.setBorder(null);
-        panel.setBounds(0, heigth, 300, 50);
-        
-        
-        
-        // Configurar o ico (IconTextField)
-        iconText.setBounds(25, 10, 30, 30);
-        iconText.setBackground(null);
-        iconText.setLayout(new GridBagLayout());
-        
-        // criando labels
-        l.setBorder(null);
-        l.setBounds(65, 10, 200, 30);
-        l.setFont(new Font("Arial", Font.BOLD, 16));
-        l.setForeground(colorFo);
-        
-        // ADICIONAR AO PAINEL
-        panel.add(iconText);
-        panel.add(l);
-        
-        
-        main.add(panel);
+    // Metodo de Search
+    //=============================
+    @Override
+    protected void componentSearch(){
+        super.componentSearch();
         
     }
-
     
     //=============================
     //Componente Main
     //=============================    
-    private void createBodyMain(){
-        // grydbag ajustavel 
-        gbc = new GridBagConstraints();
-        gbc.gridx = 1; // coluna 1
-        gbc.gridy = 0; // linha 0
-        gbc.weightx = 1; // expande horizontalmente
-        gbc.weighty = 1; // ocupa toda altura disponível
-        gbc.fill = GridBagConstraints.BOTH;
-
-        bodyMain = new JPanel();
-        bodyMain.setLayout(gLayout); // Layout absoluto para controle total
-        bodyMain.setBackground(Color.LIGHT_GRAY);
-        
-        panelRegister.add(bodyMain, gbc);
+    @Override
+    protected void createBodyMain(JPanel panel){
+        super.createBodyMain(panel); 
         
         componentSearch();
-                
-    }
-    
-    //=============================
-    // Metodo de Search
-    //=============================
-    private void componentSearch(){
-        GridBagConstraints gbcS = new GridBagConstraints();
         
-        // ==== CRIANDO CONTAINER =========
-        placeSearch = new RoundedPanel(30);
-        placeSearch.setBackground(Color.WHITE);
-        placeSearch.setPreferredSize(new Dimension(0, 56)); // altura fixa
-        placeSearch.setLayout(gLayout);
-        placeSearch.setBorder(null);
-
-        // ===== CONFIG DO CONTAINER =====
-        gbcS.gridx = 0;
-        gbcS.gridy = 0;
-        gbcS.insets = new java.awt.Insets(5, 20, 0, 20); // Espaçamento externo (MARGEM)
-        gbcS.weightx = 1; // Crescer horizontalmente
-        gbcS.weighty = 0; // NÃO crescer verticalmente
-        gbcS.fill = GridBagConstraints.HORIZONTAL;
-        // ======================================
-        
-        
-        // ===== ICON =====
-        GridBagConstraints gbcIcon = new GridBagConstraints();
-        gbcIcon.gridx = 0;
-        gbcIcon.gridy = 0;
-        gbcIcon.insets = new Insets(0, 15, 0, 10); // espaçamento interno
-        gbcIcon.anchor = GridBagConstraints.WEST;
-        
-        
-        // ===== INPUT =====
-        inputSearch = new JTextField();
-        inputSearch.setBorder(null);
-        inputSearch.setFont(new Font("Arial", Font.PLAIN, 18));
-        inputSearch.setHorizontalAlignment(JTextField.CENTER);
-
-        
-        GridBagConstraints gbcInput = new GridBagConstraints();
-        gbcInput.gridx = 1;
-        gbcInput.gridy = 0;
-        gbcInput.weightx = 1; // FAZ CRESCER
-        gbcInput.fill = GridBagConstraints.HORIZONTAL;
-        gbcInput.insets = new Insets(0, 0, 0, 15);
-       
-        // ======================
-        
-        // ADD COMPONENTES
-        placeSearch.add(iconSearc, gbcIcon);
-        placeSearch.add(inputSearch, gbcInput);
-        
-        bodyMain.add(placeSearch, gbcS);
-
         componentPanelInforRegister();
+        
+        // ADD BTNS
+        containerButton();
+        
     }
-    
-    
+
+
     //=============================
     // Panel Register Informations
     //=============================
-    private void componentPanelInforRegister(){
+    private void componentPanelInforRegister() {
         GridBagConstraints gContainer = new GridBagConstraints();
         
         container = new RoundedPanel(20);
@@ -315,52 +166,373 @@ public class Register extends JFrame {
         gContainer.fill = GridBagConstraints.HORIZONTAL;
         //===============================
         
-        
-        // ADD COMPONENTES
         bodyMain.add(container, gContainer);
+
+        // ADD COMPONENTES        
+        placeRegister();
+    }
+    
+    // ===== MEOTOD DE COMPLEMENTO DO BODY =====
+    private void placeRegister(){
+        // ===== LABEL NAME ===== 
+        JLabel nome = new JLabel("Nome:*");
+        createLabel(0, 0, 1, 0, nome);
         
-        Color v = new Color(0x52B788);
-        Color a = new Color(0x4299E1);
-        Color o = new Color(0xF6AD55);
-        Color al = new Color(0x64B5F6);
+        // ===== INPUT NAME =====
+        panName = new RoundedPanel(15);
+        inputName = new JTextField();
+        createPlaceInput(0, 1, 1, 0, panName, 0, 40, inputName);
+        
+        // ===== CALL O CONTAINER DO INPUTS MENORES =====
+        containerOthersInputs();
+        
+        // ===== LABEL OBSERVAÇOES =====
+        JLabel details = new JLabel("Observações:");
+        createLabel(0, 3, 1, 0, details);
+        
+        // ===== INPUT OBSERVAÇOES =====
+        panDetails = new RoundedPanel(15);
+        inputDetails = new JTextArea(5, 5);
+        createPlaceInputDetails(0, 4, 1, 0, panDetails, 0, 140, inputDetails);
+    }
+        
+    // Metodo para inputs curtos, devido o grid quebrar ao add eles 
+    protected void containerOthersInputs(){
+        GridBagConstraints g = new GridBagConstraints();
+        
+        cont = new RoundedPanel(20);
+        cont.setBackground(Color.WHITE);
+        /*        cont.setPreferredSize(new Dimension(0, 450));*/
+        cont.setBorder(null);
+        cont.setLayout(gLayout);
+        
+        // ===== CONFIG DO CONTAINER =====
+        g.gridx = 0;
+        g.gridy = 2;
+        g.insets = new java.awt.Insets(0, 0, 0, 0); // Espaçamento externo (MARGEM)
+        g.weightx = 1; // Crescer horizontalmente
+        g.weighty = 0; // NÃO crescer verticalmente
+        g.fill = GridBagConstraints.HORIZONTAL;
+        
+        container.add(cont, g);
+        
+        // ===== LABEL CPF =====
+        JLabel cpf = new JLabel("CPF:*");
+        createLabelSmall(0, 0, 1, 0, cpf);
+        
+        // ===== INPUT CPF =====
+        panCpf = new RoundedPanel(15);
+        inputCpf = new JTextField();
+        
+        createPlaceSmallInput(0, 1, 0, 0, 1, 0, panCpf, inputCpf);
+        
+        // ===== LABEL DATA =====
+        JLabel lblDate = new JLabel("Data de Nascimento:*");
+        createLabelSmall(1, 0, 1, 0, lblDate);
+        
+        // ===== INPUT DATA =====
+        panDate = new RoundedPanel(15);
+        inputDate = new JTextField();
+        createPlaceSmallInput(1, 1, 0, 0, 1, 0, panDate, inputDate);
+        
+        // ===== LABEL PHONE =====
+        JLabel phone = new JLabel("Telefone:");
+        createLabelSmall(0, 2, 1, 0, phone);
+        
+        // ===== INPUT PHONE =====
+        panPhone = new RoundedPanel(15);
+        inputPhone = new JTextField();
+        createPlaceSmallInput(0, 3, 0, 0, 1, 0, panPhone, inputPhone);
+        
+        // ===== LABEL E-MAIL =====
+        JLabel lblE_mail = new JLabel("E-mail:");
+        createLabelSmall(1, 2, 1, 0, lblE_mail);
+
+        // ===== INPUT E-MAIL =====        
+        panE_mail = new RoundedPanel(15);
+        inputE_mail = new JTextField();
+        createPlaceSmallInput(1, 3, 0, 0, 1, 0, panE_mail, inputE_mail);
+        
+        
+    }
+    
+    //Metodos para o input maiores onde ocuda todas as colunas do grid 
+    protected void createLabel(int c, int l, int h, int v, JLabel label){
+        GridBagConstraints gb = new GridBagConstraints();
+
+        gb.gridx = c; // Colo
+        gb.gridy = l; // lin
+        gb.weightx = h; // NÃO crescer horizontalmente
+        gb.weighty = v; // NÃO crescer verticalmente
+        gb.insets = new Insets(5, 15, 10, 10); // espaçamento interno
+        gb.anchor = GridBagConstraints.WEST;
+        
+        label.setFont(new Font("Arial", Font.PLAIN, 17));
+        label.setForeground(Color.GRAY);
+        label.setBounds(0, 40, 0, 34);
+        
+        container.add(label, gb);
+    }
+    protected void createPlaceInput(int c, int l, int h, int v, RoundedPanel panel, int d, int a, JTextField textField){
+        GridBagConstraints gb = new GridBagConstraints();
+        gb.gridx = c;
+        gb.gridy = l;
+        gb.insets = new java.awt.Insets(0, 20, 0, 20); // Espaçamento externo (MARGEM)
+        gb.weightx = h; // Crescer horizontalmente
+        gb.weighty = v; // NÃO crescer verticalmente
+        gb.fill = GridBagConstraints.HORIZONTAL;        
+        
+        panel.setBackground(Color.LIGHT_GRAY);
+        panel.setPreferredSize(new Dimension(d, a)); // altura fixa
+        panel.setLayout(gLayout);
+        panel.setBorder(null);
+        
+        GridBagConstraints gb1 = new GridBagConstraints();
+        gb1.gridx = c; // c
+        gb1.gridy = l; // l
+        gb1.insets = new java.awt.Insets(0, 20, 0, 20); // Espaçamento externo (MARGEM)
+        gb1.weightx = h; // Crescer horizontalmente
+        gb1.weighty = v; // NÃO crescer verticalmente
+        gb1.fill = GridBagConstraints.HORIZONTAL;
+        
+        
+        textField.setBorder(null);
+        textField.setBackground(Color.LIGHT_GRAY);
+        textField.setFont(new Font("Arial", Font.PLAIN, 18));
+        textField.setHorizontalAlignment(JTextField.LEFT);
+        
+        panel.add(textField, gb1);
+        
+        container.add(panel, gb);
+        
+    }
+    
+    // Metodo para inputs curtos onde divido o grid
+    protected void createLabelSmall(int c, int l, int h, int v, JLabel label){
+        GridBagConstraints gb = new GridBagConstraints();
+
+        gb.gridx = c; // Colo
+        gb.gridy = l; // lin
+        gb.weightx = h; // NÃO crescer horizontalmente
+        gb.weighty = v; // NÃO crescer verticalmente
+        gb.insets = new Insets(10, 15, 10, 10); // espaçamento interno
+        gb.anchor = GridBagConstraints.WEST;
+        
+        label.setFont(new Font("Arial", Font.PLAIN, 17));
+        label.setForeground(Color.GRAY);
+        label.setBounds(0, 40, 0, 34);
+        
+        cont.add(label, gb);
+    }
+    protected void createPlaceSmallInput(int c, int l, int h, int v, int h1, int v1, RoundedPanel panel, JTextField input){
+        
+        GridBagConstraints gb = new GridBagConstraints();
+        gb.gridx = c; // c
+        gb.gridy = l; // l
+        gb.insets = new java.awt.Insets(0, 20, 0, 20); // Espaçamento externo (MARGEM)
+        gb.weightx = h; // NÃO Crescer horizontalmente
+        gb.weighty = v; // NÃO crescer verticalmente
+        gb.fill = GridBagConstraints.HORIZONTAL;
+        
+        panel.setBackground(Color.LIGHT_GRAY);
+        panel.setPreferredSize(new Dimension(300, 40)); // altura fixa
+        panel.setLayout(gLayout);
+        panel.setBorder(null);
+        
+        
+        GridBagConstraints gb1 = new GridBagConstraints();
+        gb1.gridx = c; // c
+        gb1.gridy = l; // l
+        gb1.insets = new java.awt.Insets(0, 20, 0, 20); // Espaçamento externo (MARGEM)
+        gb1.weightx = h1; // Crescer horizontalmente
+        gb1.weighty = v1; // NÃO crescer verticalmente
+        gb1.fill = GridBagConstraints.HORIZONTAL;
+        
+        input.setBorder(null);
+        input.setBackground(Color.LIGHT_GRAY);
+        input.setFont(new Font("Arial", Font.PLAIN, 18));
+        input.setHorizontalAlignment(JTextField.LEFT);
+        
+        // ===== ICON =====
+        /*        GridBagConstraints gbcIcon = new GridBagConstraints();
+        gbcIcon.gridx = c;
+        gbcIcon.gridy = l;
+        gbcIcon.insets = new Insets(0, 0, 0, 10); // espaçamento interno
+        gbcIcon.anchor = GridBagConstraints.WEST;
+        */
+        
+        panel.add(input, gb1);
+        /*       panel.add(itf, gbcIcon);*/
+        
+        cont.add(panel, gb);
+    }
+    
+    // Metodo especifico para observaçoes
+    protected void createPlaceInputDetails(int c, int l, int h, int v, RoundedPanel panel, int d, int a, JTextArea textArea){
+        GridBagConstraints gb = new GridBagConstraints();
+        gb.gridx = c;
+        gb.gridy = l;
+        gb.insets = new java.awt.Insets(0, 20, 0, 20); // Espaçamento externo (MARGEM)
+        gb.weightx = h; // Crescer horizontalmente
+        gb.weighty = v; // NÃO crescer verticalmente
+        gb.fill = GridBagConstraints.HORIZONTAL;        
+        
+        panel.setBackground(Color.LIGHT_GRAY);
+        panel.setPreferredSize(new Dimension(d, a)); // altura fixa
+        panel.setLayout(gLayout);
+        panel.setBorder(null);
+        
+        GridBagConstraints gb1 = new GridBagConstraints();
+        gb1.gridx = c; // c
+        gb1.gridy = l; // l
+        gb1.insets = new java.awt.Insets(0, 20, 0, 20); // Espaçamento externo (MARGEM)
+        gb1.weightx = h; // Crescer horizontalmente
+        gb1.weighty = v; // NÃO crescer verticalmente
+        gb1.fill = GridBagConstraints.HORIZONTAL;
+        
+        
+        // Configurar JTextArea
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+        textArea.setBorder(null);
+        textArea.setBackground(Color.LIGHT_GRAY);
+        textArea.setFont(new Font("Arial", Font.PLAIN, 18));
+        
+        // Colocar dentro de um JScrollPane (rolagem se necessário)
+        JScrollPane scroll = new JScrollPane(textArea);
+        scroll.setBorder(null);
+        scroll.setBackground(Color.LIGHT_GRAY);
+
+        panel.add(scroll, gb1);
+        
+        container.add(panel, gb);
         
     }
     
     
-        //=============================
+    // ==== CONTAINER BTNS =====
+    protected void containerButton(){
+        GridBagConstraints g = new GridBagConstraints();
+        
+        containerButtons = new RoundedPanel(20);
+        containerButtons.setBackground(Color.LIGHT_GRAY);
+        containerButtons.setPreferredSize(new Dimension(0, 100));
+        containerButtons.setBorder(null);
+        containerButtons.setLayout(gLayout);
+        
+        // ===== CONFIG DO CONTAINER =====
+        g.gridx = 0;
+        g.gridy = 2;
+        g.insets = new java.awt.Insets(5, 20, 0, 20); // Espaçamento externo (MARGEM)
+        g.weightx = 1; // Crescer horizontalmente
+        g.weighty = 0; // NÃO crescer verticalmente
+        g.fill = GridBagConstraints.HORIZONTAL;
+        
+        bodyMain.add(containerButtons, g);
+        
+        // ADD BTNs
+        panBtnCadastrar = new RoundedPanel(10);
+        lblCadastrar = new JLabel("Cadastrar");
+        createButtoms(0, 0, 0, 0, 0, 0, panBtnCadastrar, lblCadastrar, greenColor);
+        
+        panBtnAtualizar = new RoundedPanel(10);
+        lblAtualizar = new JLabel("Atualizar");
+        Color blueC = new Color(0x4299E1);
+        createButtoms(1, 0, 0, 0, 0, 0, panBtnAtualizar, lblAtualizar, blueC);
+        
+        panBtnDeletar = new RoundedPanel(10);
+        lblDeletar = new JLabel("Deletar");
+        Color orangeC = new Color(0xF6AD55);
+        createButtoms(2, 0, 0, 0, 0, 0, panBtnDeletar, lblDeletar, orangeC);
+        
+        
+        // ===== MENSAGEM ALERT
+        GridBagConstraints m = new GridBagConstraints();
+        
+        JLabel mgs = new JLabel("Campos marcados com (*) são obrigatórios.");
+        mgs.setFont(new Font("Arial", Font.PLAIN, 8));
+        mgs.setForeground(Color.BLACK);
+        mgs.setBounds(0, 0, 0, 34);
+        
+        // ===== CONFIG DO CONTAINER =====
+        m.gridx = 0;
+        m.gridy = 3;
+        m.insets = new java.awt.Insets(5, 20, 0, 20); // Espaçamento externo (MARGEM)
+        m.weightx = 1; // Crescer horizontalmente
+        m.weighty = 0; // NÃO crescer verticalmente
+        m.fill = GridBagConstraints.HORIZONTAL;
+        
+        bodyMain.add(mgs, m);
+        
+    }
+    
+    // ====== ELEMENTS BTNS
+    protected void createButtoms(int c, int l, int h, int v, int h1, int v1, RoundedPanel panel, JLabel label, Color bColor){
+        
+        GridBagConstraints gb = new GridBagConstraints();
+        gb.gridx = c; // c
+        gb.gridy = l; // l
+        gb.insets = new java.awt.Insets(0, 20, 0, 20); // Espaçamento externo (MARGEM)
+        gb.weightx = h; // NÃO Crescer horizontalmente
+        gb.weighty = v; // NÃO crescer verticalmente
+        gb.fill = GridBagConstraints.HORIZONTAL;
+        
+        panel.setBackground(bColor);
+        panel.setPreferredSize(new Dimension(200, 50)); // altura fixa
+        panel.setLayout(gLayout);
+        panel.setBorder(null);
+        
+        
+        GridBagConstraints gb1 = new GridBagConstraints();
+        gb1.gridx = c; // c
+        gb1.gridy = l; // l
+        gb1.insets = new java.awt.Insets(0, 20, 0, 20); // Espaçamento externo (MARGEM)
+        gb1.weightx = h1; // Crescer horizontalmente
+        gb1.weighty = v1; // NÃO crescer verticalmente
+        gb1.fill = GridBagConstraints.HORIZONTAL;
+        
+        label.setFont(new Font("Arial", Font.BOLD, 17));
+        label.setForeground(Color.WHITE);
+        label.setBounds(0, 40, 0, 34);
+        
+        
+        panel.add(label, gb1);
+        
+        containerButtons.add(panel, gb);
+    }
+    
+    //=============================
     // Componente SideBar_Rigth
-    //=============================    
-    private void createSideBarRigth(){
-        // grydbag ajustavel 
-        gbc = new GridBagConstraints();
-        gbc.gridx = 2; // coluna 2
-        gbc.gridy = 0; // linha 0
-        gbc.weightx = 0; // não expande horizontalmente
-        gbc.weighty = 1; // ocupa toda altura disponível
-        gbc.fill = GridBagConstraints.VERTICAL;
+    //============================= 
+    @Override
+    protected void createSideBarRigth(JPanel panel){
+        super.createSideBarRigth(panel); 
         
-        // crinado o side bar Rigth
-        sideBarRight = new JPanel();
-        sideBarRight.setLayout(null); // Layout absoluto para controle total
-        sideBarRight.setBackground(Color.WHITE);
-        sideBarRight.setPreferredSize(new java.awt.Dimension(300, 0));
-        
-        panelRegister.add(sideBarRight, gbc);
         
         peopleCard_1 = new JLabel("Paciente 1");
         peopleCard_2 = new JLabel("Paciente 2");
+        peopleCard_3 = new JLabel("Paciente 3");
+        peopleCard_4 = new JLabel("Paciente 4");
+        peopleCard_5 = new JLabel("Paciente 5");
         
-        createCards(sideBarRight, peopleCard_1, 20, 165);
-        createCards(sideBarRight, peopleCard_2, 20, 314);
-        
-        
+        createCards(sideBarRight, peopleCard_1, 20, 145);
+        createCards(sideBarRight, peopleCard_2, 20, 245);
+        createCards(sideBarRight, peopleCard_3, 20, 345);
+        createCards(sideBarRight, peopleCard_4, 20, 445);
+        createCards(sideBarRight, peopleCard_5, 20, 545);
     }
     
-    
-        //=============================    
+    //=============================    
     // Cards de Proximos Atendimentos - Component Sidebar_Rigth
     //=============================
     private void createCards(JPanel main,  JLabel u, int x, int y){
+        JLabel label = new JLabel("Pacientes Recentes");
+        label.setFont(new Font("Arial", Font.PLAIN, 17));
+        label.setForeground(Color.BLACK);
+        label.setBounds(0, 40, 300, 34);
+        label.setVerticalAlignment(JLabel.CENTER);
+        label.setHorizontalAlignment(JLabel.CENTER);
+        
         
         Color pretoTransparente = new Color(0, 0, 0, 80); //  transparência
 
@@ -385,11 +557,10 @@ public class Register extends JFrame {
         
         cardPanel.add(u);
         
+        main.add(label);
         main.add(cardPanel);
         
     }
-    
-    
     
     
     //=============================    
