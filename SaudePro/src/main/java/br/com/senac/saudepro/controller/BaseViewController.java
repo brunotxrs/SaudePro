@@ -1,14 +1,21 @@
 package br.com.senac.saudepro.controller;
 
 import br.com.senac.saudepro.gui.BaseView;
+import br.com.senac.saudepro.gui.HomeDashboard;
+import br.com.senac.saudepro.gui.Register;
 import br.com.senac.saudepro.util.AuxiliaryMethod;
 import br.com.senac.saudepro.util.IconTextField;
 import br.com.senac.saudepro.util.RoundedPanel;
 import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Window;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JTextField;
 
 /**
  * BaseViewController servira de herança para filhas de controller eliminando codes repetidos
@@ -76,7 +83,7 @@ public abstract class BaseViewController {
         icoClosN = AuxiliaryMethod.loadedIcone(baseView.getAllParthIcons(4), 30, 30);
         icoHelpN = AuxiliaryMethod.loadedIcone(baseView.getAllParthIcons(5), 30, 30);
         
-        //iconSearchN = AuxiliaryMethod.loadedIcone(baseView.getAllParthIcons(7), 30, 30);
+        iconSearchN = AuxiliaryMethod.loadedIcone(baseView.getAllParthIcons(7), 30, 30);
         
         
         
@@ -86,13 +93,22 @@ public abstract class BaseViewController {
         icoClosH = AuxiliaryMethod.loadedIcone(_PARTH_IMG_CLOSE_HOVER, 30, 30);
         icoHelpH = AuxiliaryMethod.loadedIcone(_PARTH_IMG_HELP_HOVER, 30, 30);
         
-        //iconSearchH = AuxiliaryMethod.loadedIcone(_PARTH_IMG_SEARCH_HOVER, 30, 30);
+        iconSearchH = AuxiliaryMethod.loadedIcone(_PARTH_IMG_SEARCH_HOVER, 30, 30);
         
     }
     
         // INICIAR TODOS OUTROS COMPONENTES
     protected void initController() {
         loadIcones();
+        
+        AuxiliaryMethod.setPlaceholder(baseView.getInputSearch(), "Buscar paciente por nome ou CPF...");
+        aplicationHover(baseView.getInputSearch(), baseView.getAllIncons(6), iconSearchN, iconSearchH, baseView.getPlaceSearch());
+   
+        baseView.getAllBtns(1).setCursor(new Cursor(Cursor.HAND_CURSOR));
+        baseView.getAllBtns(2).setCursor(new Cursor(Cursor.HAND_CURSOR));
+        baseView.getAllBtns(3).setCursor(new Cursor(Cursor.HAND_CURSOR));
+        baseView.getAllBtns(4).setCursor(new Cursor(Cursor.HAND_CURSOR));
+        baseView.getAllBtns(5).setCursor(new Cursor(Cursor.HAND_CURSOR));
         
         // Configurar hover e clique para todos os botões
         configurarBotao(baseView.getAllBtns(1), baseView.getAllIncons(1), icoInitN, icoInitH, baseView.getLabelsBtns(1), "Inicio");
@@ -104,6 +120,7 @@ public abstract class BaseViewController {
         
         // Selecionar Inicio por padrão
         selecionarBotao(baseView.getAllBtns(1), baseView.getAllIncons(1), icoInitN, icoInitH, baseView.getLabelsBtns(1));
+        
         
     }
     
@@ -137,18 +154,43 @@ public abstract class BaseViewController {
             }
         });
 
-        // ========== CLIQUE ==========
+        // ========== CLIQUE + NAVEGAÇAO ==========
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 // Seleciona o botão (aqui os ícones serão tratados)
                 selecionarBotao(panel, iconField, imgNormal, imgHover, label);
 
+                switch(nomeBotao){
+                    case "Inicio":
+                        System.out.println("Já está no Dashboard");
+                        openDashBoard();
+                        break;
+                    case "Cadastro":
+                        openRegister();
+                        break;
+                    case "Agendamento":
+                        System.out.println("Abrindo tela de Agendamento...");
+                        // openScheduling();
+                        break;
+                    case "Sair":
+                        System.out.println("Fechando aplicação...");
+                        // Login
+                        break;
+                    case "Suporte":
+                        System.out.println("Abrindo Suporte...");
+                        // abrirSuporte();
+                        break;
+                    default:
+                        break; 
+                }
+                
                 // Ações específicas
                 if (nomeBotao.equals("Sair")) {
                     System.out.println("Sair - Fechar aplicação");
                 } else {
                     System.out.println("Clicou em: " + nomeBotao);
+                    
                 }
             }
         });
@@ -184,4 +226,56 @@ public abstract class BaseViewController {
     }
     
     
+    protected void aplicationHover(JTextField campo, IconTextField iconField, ImageIcon normal, ImageIcon hover, RoundedPanel panel) {
+        if (campo == null || iconField == null) return;
+        
+        campo.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                panel.setRoundedBorder(HOVER_COLOR, 2);
+                iconField.setIcon(hover);
+            }
+            
+            @Override
+            public void focusLost(FocusEvent e) {
+                panel.setRoundedBorder(null, 1);
+                iconField.setIcon(normal);
+            }
+        });
+    }
+    
+    protected void openDashBoard(){
+        // Procura se já existe uma janela do Dashboard aberta
+        for (Window window : Window.getWindows()) {
+            if (window instanceof HomeDashboard && window.isVisible()) {
+                window.toFront();
+                return;
+            }
+        }
+
+        HomeDashboard hd = new HomeDashboard();
+        
+        new HomeDashboardController(hd);
+        
+        hd.setVisible(true);
+        
+        baseView.dispose();
+    }
+    
+    protected void openRegister(){
+        // Procura se já existe uma janela do Register aberta
+        for (Window window : Window.getWindows()) {
+            if (window instanceof Register && window.isVisible()) {
+                window.toFront();
+                return;
+            }
+        }
+
+        Register register = new Register();
+        
+        register.setVisible(true);
+        
+        baseView.dispose();
+        
+    }
 }
