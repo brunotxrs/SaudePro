@@ -4,12 +4,15 @@ import br.com.senac.saudepro.util.IconTextField;
 import br.com.senac.saudepro.util.ImageLogo;
 import br.com.senac.saudepro.util.RoundedPanel;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 /**
  * BaseView classe para reaproveitamento de codigos
@@ -29,11 +32,15 @@ public abstract class BaseView extends JFrame {
     protected static RoundedPanel btnClose; // <- btn [ Sair ]
     protected static RoundedPanel btnHelp; // <- btn [ Suporte ]
     
+    private static RoundedPanel placeSearch; // <- campo de perguisar
+    
     protected static JLabel lblInitial; // - Nao irei precisar no Controller
     protected static JLabel lblRegister; // - Nao irei precisar no Controller
     protected static JLabel lblScheduling; // - Nao irei precisar no Controller
     protected static JLabel lblClose;    // - Nao irei precisar no Controller
     protected static JLabel lblHelp; // - Nao irei precisar no Controller
+    
+    private static JTextField inputSearch; // - rei precisar no Controller
     
     
     //=============================
@@ -43,7 +50,6 @@ public abstract class BaseView extends JFrame {
     protected final String _parthIconScheduling = "src/main/java/resources/img/calendarIco.png";
     protected final String _parthIconClose = "src/main/java/resources/img/closeIco.png";
     protected final String _parthIconHelp = "src/main/java/resources/img/helpIco.png";
-    protected final String _parthIconAdd = "src/main/java/resources/img/addBlack.png";
     protected final String _parthIconSearch = "src/main/java/resources/img/searchIco.png";
     
     //=============================    
@@ -53,7 +59,6 @@ public abstract class BaseView extends JFrame {
     protected final IconTextField icoSched = new IconTextField(_parthIconScheduling, 30, 30);
     protected final IconTextField icoClos = new IconTextField(_parthIconClose, 30, 30);
     protected final IconTextField icoHelp = new IconTextField(_parthIconHelp, 30, 30);
-    protected final IconTextField icoAdd = new IconTextField(_parthIconAdd, 30, 30);
     protected final IconTextField iconSearc = new IconTextField(_parthIconSearch, 30, 30);
     
     //=============================    
@@ -96,7 +101,7 @@ public abstract class BaseView extends JFrame {
         // add more componets
     }
     
-        //=============================
+    //=============================
     // Componente - SideBar_Left
     //=============================
     protected void createSideBarLeft(JPanel panel) {
@@ -147,7 +152,7 @@ public abstract class BaseView extends JFrame {
     //=============================    
     // metodo reaprovetavel pra criar btn navegations - Component Sidebar_Left
     //=============================
-    private void buttonsNavegations(
+    protected void buttonsNavegations(
             RoundedPanel panel, 
             Color colorBg, 
             int heigth, 
@@ -206,6 +211,59 @@ public abstract class BaseView extends JFrame {
         
     }
     
+    
+    protected void componentSearch(){
+        GridBagConstraints gbcS = new GridBagConstraints();
+        
+        // ==== CRIANDO CONTAINER =========
+        placeSearch = new RoundedPanel(30);
+        placeSearch.setBackground(Color.WHITE);
+        placeSearch.setPreferredSize(new Dimension(0, 56)); // altura fixa
+        placeSearch.setLayout(gLayout);
+        placeSearch.setBorder(null);
+
+        // ===== CONFIG DO CONTAINER =====
+        gbcS.gridx = 0;
+        gbcS.gridy = 0;
+        gbcS.insets = new java.awt.Insets(5, 20, 0, 20); // Espaçamento externo (MARGEM)
+        gbcS.weightx = 1; // Crescer horizontalmente
+        gbcS.weighty = 0; // NÃO crescer verticalmente
+        gbcS.fill = GridBagConstraints.HORIZONTAL;
+        // ======================================
+        
+        
+        // ===== ICON =====
+        GridBagConstraints gbcIcon = new GridBagConstraints();
+        gbcIcon.gridx = 0;
+        gbcIcon.gridy = 0;
+        gbcIcon.insets = new Insets(0, 15, 0, 10); // espaçamento interno
+        gbcIcon.anchor = GridBagConstraints.WEST;
+        
+        
+        // ===== INPUT =====
+        inputSearch = new JTextField();
+        inputSearch.setBorder(null);
+        inputSearch.setFont(new Font("Arial", Font.PLAIN, 18));
+        inputSearch.setHorizontalAlignment(JTextField.CENTER);
+
+        
+        GridBagConstraints gbcInput = new GridBagConstraints();
+        gbcInput.gridx = 1;
+        gbcInput.gridy = 0;
+        gbcInput.weightx = 1; // FAZ CRESCER
+        gbcInput.fill = GridBagConstraints.HORIZONTAL;
+        gbcInput.insets = new Insets(0, 0, 0, 15);
+       
+        // ======================
+        
+        // ADD COMPONENTES
+        placeSearch.add(iconSearc, gbcIcon);
+        placeSearch.add(inputSearch, gbcInput);
+        
+        bodyMain.add(placeSearch, gbcS);
+
+    }
+    
     //=============================
     // Componente SideBar_Rigth
     //=============================    
@@ -262,6 +320,7 @@ public abstract class BaseView extends JFrame {
             case 3 -> _parthIconScheduling;
             case 4 -> _parthIconClose;
             case 5 -> _parthIconHelp;
+            case 6 -> _parthIconSearch;
             default -> null;
         };
     }
@@ -275,11 +334,20 @@ public abstract class BaseView extends JFrame {
             case 2 -> icoRegis;
             case 3 -> icoSched;
             case 4 -> icoClos;
-            case 5 -> icoHelp;    
+            case 5 -> icoHelp;
+            case 6 -> iconSearc;
             default -> null;
                 
         };
         
+    }
+    
+    public static JTextField getInputSearch(){
+        return inputSearch;
+    }
+    
+    public static RoundedPanel getPlaceSearch(){
+        return placeSearch;
     }
     
 }
