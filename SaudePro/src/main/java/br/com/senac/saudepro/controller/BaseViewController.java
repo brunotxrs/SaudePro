@@ -53,7 +53,7 @@ public abstract class BaseViewController {
     protected ImageIcon icoHelpH;
     
     // View Base
-    private final BaseView baseView;
+    final BaseView baseView;
     
     // Controle de qual botão está selecionado
     protected RoundedPanel selectedPanel = null;
@@ -83,7 +83,7 @@ public abstract class BaseViewController {
         icoClosN = AuxiliaryMethod.loadedIcone(baseView.getAllParthIcons(4), 30, 30);
         icoHelpN = AuxiliaryMethod.loadedIcone(baseView.getAllParthIcons(5), 30, 30);
         
-        iconSearchN = AuxiliaryMethod.loadedIcone(baseView.getAllParthIcons(7), 30, 30);
+        iconSearchN = AuxiliaryMethod.loadedIcone(baseView.getAllParthIcons(6), 30, 30);
         
         
         
@@ -104,6 +104,7 @@ public abstract class BaseViewController {
         AuxiliaryMethod.setPlaceholder(baseView.getInputSearch(), "Buscar paciente por nome ou CPF...");
         aplicationHover(baseView.getInputSearch(), baseView.getAllIncons(6), iconSearchN, iconSearchH, baseView.getPlaceSearch());
    
+        // CURSOR DA MAOZINHA
         baseView.getAllBtns(1).setCursor(new Cursor(Cursor.HAND_CURSOR));
         baseView.getAllBtns(2).setCursor(new Cursor(Cursor.HAND_CURSOR));
         baseView.getAllBtns(3).setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -112,6 +113,7 @@ public abstract class BaseViewController {
         
         // Configurar hover e clique para todos os botões
         configurarBotao(baseView.getAllBtns(1), baseView.getAllIncons(1), icoInitN, icoInitH, baseView.getLabelsBtns(1), "Inicio");
+        
         configurarBotao(baseView.getAllBtns(2), baseView.getAllIncons(2), icoRegisN, icoRegisH, baseView.getLabelsBtns(2), "Cadastro");
         configurarBotao(baseView.getAllBtns(3), baseView.getAllIncons(3), icoSchedN, icoSchedH, baseView.getLabelsBtns(3), "Agendamento");
         
@@ -126,7 +128,7 @@ public abstract class BaseViewController {
     
     
     // ========== CONFIGURAR BOTÃO ==========
-    private void configurarBotao(RoundedPanel panel, IconTextField iconField, ImageIcon imgNormal, ImageIcon imgHover, JLabel label, String nomeBotao) {
+    protected void configurarBotao(RoundedPanel panel, IconTextField iconField, ImageIcon imgNormal, ImageIcon imgHover, JLabel label, String nomeBotao) {
         if (panel == null || label == null) return;
 
         // ========== HOVER ==========
@@ -272,6 +274,8 @@ public abstract class BaseViewController {
         }
 
         Register register = new Register();
+        
+        new RegisterController(register);
         
         register.setVisible(true);
         
