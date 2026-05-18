@@ -46,6 +46,9 @@ public class HomeDashboardController extends BaseViewController {
         dashboard.getAllInconsDash(1).setLayout(new GridBagLayout());
         AuxiliaryMethod.aplcateHoverInBtns(dashboard.getBtnNewFitting(), dashboard.getAllInconsDash(1), icoAddN, icoAddH, HOVER_COLOR, Color.WHITE, SELECTED_COLOR);
         
+        
+        // Selecionar Inicio por padrão
+        selecionarBotao(baseView.getAllBtns(1), baseView.getAllIncons(1), icoInitN, icoInitH, baseView.getLabelsBtns(1));
     }
     
     
