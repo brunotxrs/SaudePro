@@ -147,8 +147,7 @@ public class Register extends BaseView {
         
     }
 
-
-    //=============================
+//=============================
     // Panel Register Informations
     //=============================
     private void componentPanelInforRegister() {
@@ -173,6 +172,7 @@ public class Register extends BaseView {
         // ADD COMPONENTES        
         placeRegister();
     }
+    
     
     // ===== MEOTOD DE COMPLEMENTO DO BODY =====
     private void placeRegister(){
