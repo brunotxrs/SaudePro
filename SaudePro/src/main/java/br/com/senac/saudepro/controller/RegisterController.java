@@ -56,11 +56,5 @@ public class RegisterController extends BaseViewController {
     }
     
     
-    
-    
-    
-    
-    
-    
-    
+        
 }
