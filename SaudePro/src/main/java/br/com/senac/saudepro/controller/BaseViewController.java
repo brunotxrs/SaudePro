@@ -2,7 +2,9 @@ package br.com.senac.saudepro.controller;
 
 import br.com.senac.saudepro.gui.BaseView;
 import br.com.senac.saudepro.gui.HomeDashboard;
+import br.com.senac.saudepro.gui.Login;
 import br.com.senac.saudepro.gui.Register;
+import br.com.senac.saudepro.gui.Scheduling;
 import br.com.senac.saudepro.util.AuxiliaryMethod;
 import br.com.senac.saudepro.util.IconTextField;
 import br.com.senac.saudepro.util.RoundedPanel;
@@ -173,11 +175,11 @@ public abstract class BaseViewController {
                         break;
                     case "Agendamento":
                         System.out.println("Abrindo tela de Agendamento...");
-                        // openScheduling();
+                        openScheduling();
                         break;
                     case "Sair":
                         System.out.println("Fechando aplicação...");
-                        // Login
+                        abrirLogin();
                         break;
                     case "Suporte":
                         System.out.println("Abrindo Suporte...");
@@ -282,4 +284,41 @@ public abstract class BaseViewController {
         baseView.dispose();
         
     }
+    
+    protected void openScheduling(){
+         // Procura se já existe uma janela do Register aberta
+        for (Window window : Window.getWindows()) {
+            if (window instanceof Scheduling && window.isVisible()) {
+                window.toFront();
+                return;
+            }
+        }
+        
+        Scheduling scheduling = new Scheduling();
+        new SchedulingController(scheduling);
+        
+        scheduling.setVisible(true);
+        
+        baseView.dispose();
+        
+    }
+    
+    protected void abrirLogin() {
+        for (Window window : Window.getWindows()) {
+            if (window instanceof Login && window.isVisible()) {
+                window.toFront();
+                return;
+            }
+        }
+        
+        
+        Login login = new Login();
+        
+        new LoginController(login);
+        
+        login.setVisible(true);
+        
+        baseView.dispose();
+    }
+    
 }
