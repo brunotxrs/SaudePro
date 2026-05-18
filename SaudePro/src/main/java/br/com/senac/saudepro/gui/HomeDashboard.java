@@ -1,6 +1,7 @@
 package br.com.senac.saudepro.gui;
 
 import br.com.senac.saudepro.controller.HomeDashboardController;
+import br.com.senac.saudepro.util.AuxiliaryMethod;
 import br.com.senac.saudepro.util.IconTextField;
 import br.com.senac.saudepro.util.RoundedPanel;
 import br.com.senac.saudepro.util.ShadowPanel;
@@ -12,11 +13,6 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.Locale;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -65,14 +61,14 @@ public class HomeDashboard extends BaseView {
     //=============================    
     // Table
     private static JTable scheduleTable; // -  irei precisar no Controller
+// -  irei precisar no Controller
     
     //=============================    
     // Cores
     private final Color greenColor = new Color(0x458C45);
-
     //=============================    
     // Elements
-    private static JLabel dateToday;
+
     
     private static final GridBagLayout gLayout = new GridBagLayout();
     private static GridBagConstraints gbc;
@@ -369,7 +365,8 @@ public class HomeDashboard extends BaseView {
         super.createSideBarRigth(panel);
     
         // add more components
-        showDateActual();
+        JLabel lblNexts = new JLabel("Próximos Atendimentos");
+        AuxiliaryMethod.showDateActual(sideBarRight, greenColor, lblNexts);
         
         createCards(sideBarRight, peopleCard_1, professionalCard_1, 20, 165);
         createCards(sideBarRight, peopleCard_2, professionalCard_2, 20, 314);
@@ -383,60 +380,6 @@ public class HomeDashboard extends BaseView {
     }
 
     
-    //=============================    
-    // criando metodo pra exibiçao da Data - Component Sidebar_Rigth
-    //=============================
-    private void showDateActual(){
-        // Area de Data e Hora
-        dateToday = new JLabel();
-        
-        dateToday.setFont(new Font("Arial", Font.PLAIN, 18));
-        dateToday.setForeground(greenColor);
-        dateToday.setBounds(0, 25, 300, 70);
-        
-        
-        LocalDate today = LocalDate.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
-                "EEEE dd 'de' MMMM 'de' yyyy", 
-                new Locale("pt", "BR")
-        ); 
-        
-        // Data e Formatando
-        String dataFormatada = today.format(formatter);
-        dataFormatada = dataFormatada.substring(0, 1).toUpperCase() + dataFormatada.substring(1);
-        
-        // Hora e Formatando 
-        Date horaActual = new Date();
-        String timeActual = new SimpleDateFormat("HH:mm:ss").format(horaActual);
-        
-        
-        dateToday.setText(
-                "<html>"
-                        + 
-                        "<div style='text-align:center; 'width=300px'; height='45px'>"
-                            + dataFormatada + "<br>Hora " + timeActual +
-                        "</div>"
-             + "</html>" 
-        );
-        dateToday.setHorizontalAlignment(JLabel.CENTER);
-        dateToday.setVerticalAlignment(JLabel.CENTER);
-        
-        
-        // Area de proximos atendimentos
-        JLabel lblNexts = new JLabel("Próximos Atendimentos");
-        lblNexts.setFont(new Font("Arial", Font.PLAIN, 18));
-        lblNexts.setForeground(Color.BLACK);
-        lblNexts.setBounds(20, 100, 250, 40);
-        lblNexts.setHorizontalAlignment(JLabel.CENTER);
-        
-        lblNexts.setBorder(BorderFactory.createMatteBorder(2, 0, 0, 0, greenColor));
-        
-        
-
-        sideBarRight.add(dateToday);
-        sideBarRight.add(lblNexts);
-    }
-
     //=============================    
     // Cards de Proximos Atendimentos - Component Sidebar_Rigth
     //=============================
