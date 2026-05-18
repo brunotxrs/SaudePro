@@ -591,9 +591,8 @@ public class Register extends BaseView {
     }
     
     //=============
-    // GETTS
+    // GETs
     //=============
-    // FAZER OS GETS
     
     //Panel de Input a Btns
     public RoundedPanel getAllPanels(int selection){
@@ -613,6 +612,7 @@ public class Register extends BaseView {
        
     };
     
+    // Input
     public JTextField getAllInputs(int select){
         return switch (select){
            case 1 -> inputName;
@@ -624,8 +624,10 @@ public class Register extends BaseView {
        };
     }
     
+    // Detalhes
     public JTextArea getInpuintDetails(){return inputDetails;}
     
+    // Todos os label
     public JLabel getAllLabels(int i){
         return switch (i){
            case 1 -> lblCadastrar;
