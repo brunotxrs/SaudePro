@@ -1,5 +1,6 @@
 package br.com.senac.saudepro.gui;
 
+import br.com.senac.saudepro.controller.RegisterController;
 import br.com.senac.saudepro.util.RoundedPanel;
 import br.com.senac.saudepro.util.ShadowPanel;
 import java.awt.Color;
@@ -43,6 +44,7 @@ public class Register extends BaseView {
     private static RoundedPanel panE_mail;
     private static JTextField inputE_mail;
     private static RoundedPanel panDetails;
+    
     private static JTextArea inputDetails;
 
 
@@ -433,7 +435,7 @@ public class Register extends BaseView {
         // ADD BTNs
         panBtnCadastrar = new RoundedPanel(10);
         lblCadastrar = new JLabel("Cadastrar");
-        createButtoms(0, 0, 0, 0, 0, 0, panBtnCadastrar, lblCadastrar, greenColor);
+        createButtoms(0, 0, 0, 0, 0, 0, panBtnCadastrar, lblCadastrar, new Color(0x7ED348));
         
         panBtnAtualizar = new RoundedPanel(10);
         lblAtualizar = new JLabel("Atualizar");
@@ -582,9 +584,54 @@ public class Register extends BaseView {
         java.awt.EventQueue.invokeLater(() -> {
             Register register = new Register();
             
-            //new RegisterController(register);
+            new RegisterController(register);
             
             register.setVisible(true);
         });
+    }
+    
+    //=============
+    // GETTS
+    //=============
+    // FAZER OS GETS
+    
+    //Panel de Input a Btns
+    public RoundedPanel getAllPanels(int selection){
+      
+       return switch (selection){
+           case 1 -> panName;
+           case 2 -> panCpf;
+           case 3 -> panDate;
+           case 4 -> panPhone;
+           case 5 -> panE_mail;
+           case 6 -> panDetails;
+           case 7 -> panBtnCadastrar;
+           case 8 -> panBtnAtualizar;
+           case 9 -> panBtnDeletar;
+           default -> null;
+       };
+       
+    };
+    
+    public JTextField getAllInputs(int select){
+        return switch (select){
+           case 1 -> inputName;
+           case 2 -> inputCpf;
+           case 3 -> inputDate;
+           case 4 -> inputPhone;
+           case 5 -> inputE_mail;
+           default -> null;
+       };
+    }
+    
+    public JTextArea getInpuintDetails(){return inputDetails;}
+    
+    public JLabel getAllLabels(int i){
+        return switch (i){
+           case 1 -> lblCadastrar;
+           case 2 -> lblAtualizar;
+           case 3 -> lblDeletar;
+           default -> null;
+       };
     }
 }
