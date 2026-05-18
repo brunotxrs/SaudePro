@@ -9,6 +9,11 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.Locale;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
@@ -224,5 +229,57 @@ public class AuxiliaryMethod {
                 panel.setBackground(normal);
             }
         });
+    }
+    
+    
+    public static void showDateActual(JPanel panel, Color c, JLabel label){
+        // Area de Data e Hora
+        JLabel dateToday = new JLabel();
+        
+        dateToday.setFont(new Font("Arial", Font.PLAIN, 18));
+        dateToday.setForeground(c);
+        dateToday.setBounds(0, 25, 300, 70);
+        
+        
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(
+                "EEEE dd 'de' MMMM 'de' yyyy", 
+                new Locale("pt", "BR")
+        ); 
+        
+        // Data e Formatando
+        String dataFormatada = today.format(formatter);
+        dataFormatada = dataFormatada.substring(0, 1).toUpperCase() + dataFormatada.substring(1);
+        
+        // Hora e Formatando 
+        Date horaActual = new Date();
+        String timeActual = new SimpleDateFormat("HH:mm:ss").format(horaActual);
+        
+        
+        dateToday.setText(
+                "<html>"
+                        + 
+                        "<div style='text-align:center; 'width=300px'; height='45px'>"
+                            + dataFormatada + "<br>Hora " + timeActual +
+                        "</div>"
+             + "</html>" 
+        );
+        dateToday.setHorizontalAlignment(JLabel.CENTER);
+        dateToday.setVerticalAlignment(JLabel.CENTER);
+        
+        
+        // Area de proximos atendimentos
+
+        label.setFont(new Font("Arial", Font.PLAIN, 18));
+        label.setForeground(Color.BLACK);
+        label.setBounds(20, 100, 250, 40);
+        label.setHorizontalAlignment(JLabel.CENTER);
+        
+        label.setBorder(BorderFactory.createMatteBorder(2, 0, 0, 0, c));
+        
+        
+
+        panel.add(dateToday);
+        panel.add(label);
     }
 }
