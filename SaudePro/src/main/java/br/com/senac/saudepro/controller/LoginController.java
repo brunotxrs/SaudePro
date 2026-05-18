@@ -1,5 +1,6 @@
 package br.com.senac.saudepro.controller;
 
+import br.com.senac.saudepro.gui.HomeDashboard;
 import br.com.senac.saudepro.gui.Login;
 import br.com.senac.saudepro.util.AuxiliaryMethod;
 import br.com.senac.saudepro.util.IconTextField;
@@ -220,6 +221,14 @@ public class LoginController {
         // Criar IF pra outra janela
         if(!user.equals(placerUser) && !pass.equals(placerPass)){
             System.out.println("IR NOVA JANELA");
+            
+            HomeDashboard hd = new HomeDashboard();
+            
+            new HomeDashboardController(hd);
+            
+            hd.setVisible(true);
+            
+            viewLogin.dispose();
         }
     }
    
