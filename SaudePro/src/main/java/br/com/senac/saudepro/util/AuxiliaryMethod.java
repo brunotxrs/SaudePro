@@ -5,6 +5,8 @@ import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.BorderFactory;
@@ -13,6 +15,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.Timer;
 
@@ -25,6 +28,7 @@ public class AuxiliaryMethod {
     private static Dialog dialog;
     private static JPanel selectedPanel = null;
     
+    protected static Color HOVER_COLOR = new Color(0x7ED348);
     /**
      *
      * @param field
@@ -169,4 +173,56 @@ public class AuxiliaryMethod {
         
     }
     
+    
+    public static void aplicateHover(JTextField campo, RoundedPanel panel) {
+        if (campo == null) return;
+        
+        campo.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                panel.setRoundedBorder(HOVER_COLOR, 2);
+            }
+            
+            @Override
+            public void focusLost(FocusEvent e) {
+                panel.setRoundedBorder(null, 1);
+
+            }
+        });
+    }
+
+    public static void aplicarHover(JTextArea campo, RoundedPanel panel) {
+        if (campo == null) return;
+        
+        campo.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                panel.setRoundedBorder(HOVER_COLOR, 2);
+            }
+            
+            @Override
+            public void focusLost(FocusEvent e) {
+                panel.setRoundedBorder(null, 1);
+
+            }
+        });
+    }
+    
+    
+    // Em AuxiliaryMethod.java
+    public static void buttonsHover(JLabel label, RoundedPanel panel, Color hover, Color normal) {
+        if (label == null || panel == null) return;
+
+        label.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                panel.setBackground(hover);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                panel.setBackground(normal);
+            }
+        });
+    }
 }
