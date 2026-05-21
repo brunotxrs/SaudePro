@@ -3,8 +3,6 @@ package br.com.senac.saudepro.controller;
 import br.com.senac.saudepro.gui.Scheduling;
 import br.com.senac.saudepro.util.AuxiliaryMethod;
 import java.awt.Cursor;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 public class SchedulingController extends BaseViewController {
     
