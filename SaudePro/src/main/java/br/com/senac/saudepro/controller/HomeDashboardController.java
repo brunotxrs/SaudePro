@@ -49,6 +49,10 @@ public class HomeDashboardController extends BaseViewController {
         
         // Selecionar Inicio por padrão
         selecionarBotao(baseView.getAllBtns(1), baseView.getAllIncons(1), icoInitN, icoInitH, baseView.getLabelsBtns(1));
+        
+        // btn novo encaixe 
+        AuxiliaryMethod.configurarAcoes(dashboard.getBtnNewFitting(), dashboard);
+        
     }
     
     
