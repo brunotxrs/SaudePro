@@ -304,21 +304,35 @@ public abstract class BaseViewController {
     }
     
     protected void abrirLogin() {
-        for (Window window : Window.getWindows()) {
-            if (window instanceof Login && window.isVisible()) {
-                window.toFront();
-                return;
+        
+        boolean confirmado = AuxiliaryMethod.mostrarConfirmacaoFlutuante(
+            baseView,
+            "Deseja realmente sair?",
+            350,
+            150
+        );
+        
+        
+        if (confirmado){
+            for (Window window : Window.getWindows()) {
+                if (window instanceof Login && window.isVisible()) {
+                    window.toFront();
+                    return;
+                }
             }
+            
+            Login login = new Login();
+        
+            new LoginController(login);
+
+            login.setVisible(true);
+
+            baseView.dispose();
         }
         
         
-        Login login = new Login();
         
-        new LoginController(login);
         
-        login.setVisible(true);
-        
-        baseView.dispose();
     }
     
 }
