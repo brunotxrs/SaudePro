@@ -468,6 +468,7 @@ public class HomeDashboard extends BaseView {
             new HomeDashboardController(hd);
             
             hd.setVisible(true);
+            
         });
     }
     
