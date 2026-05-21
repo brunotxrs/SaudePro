@@ -35,6 +35,11 @@ public class RegisterController extends BaseViewController {
         
         // Selecionar Inicio por padrão
         selecionarBotao(baseView.getAllBtns(2), baseView.getAllIncons(2), icoRegisN, icoRegisH, baseView.getLabelsBtns(2));
+        AuxiliaryMethod.setPlaceholder(r.getAllInputs(1), "Nome do Paciente");
+        AuxiliaryMethod.setPlaceholder(r.getAllInputs(2), "000.000.000-00");
+        AuxiliaryMethod.setPlaceholder(r.getAllInputs(3), "00/00/0000");
+        AuxiliaryMethod.setPlaceholder(r.getAllInputs(4), "(00) 0 0000-0000");
+        AuxiliaryMethod.setPlaceholder(r.getAllInputs(5), "paciente@paciente.com");
         
         AuxiliaryMethod.aplicateHover(r.getAllInputs(1), r.getAllPanels(1));
         AuxiliaryMethod.aplicateHover(r.getAllInputs(2), r.getAllPanels(2));
