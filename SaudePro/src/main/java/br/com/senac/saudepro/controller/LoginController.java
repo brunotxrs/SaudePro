@@ -15,6 +15,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 import javax.swing.JTextField;
 
 public class LoginController {
@@ -221,14 +222,22 @@ public class LoginController {
         // Criar IF pra outra janela
         if(!user.equals(placerUser) && !pass.equals(placerPass)){
             System.out.println("IR NOVA JANELA");
-            
+
+            // Abrir Dashboard
             HomeDashboard hd = new HomeDashboard();
             
             new HomeDashboardController(hd);
             
             hd.setVisible(true);
+            if(viewLogin.getBoxLogin() != null){
+                viewLogin.getBoxLogin().removeAll();
+            }
             
+            // Fechar a tela de Login e FORÇAR limpeza
+            viewLogin.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            viewLogin.getBoxLogin().setVisible(false);
             viewLogin.dispose();
+            
         }
     }
    
