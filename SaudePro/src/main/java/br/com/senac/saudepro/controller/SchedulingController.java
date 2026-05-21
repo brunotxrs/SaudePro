@@ -38,42 +38,20 @@ public class SchedulingController extends BaseViewController {
         // Cursores dos botões
         view.getAllPanels(7).setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         view.getAllPanels(8).setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        view.getAllBoxDoctors(1).setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        view.getAllBoxDoctors(2).setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        view.getAllBoxDoctors(3).setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        view.getAllBoxDoctors(4).setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         
         // Hover nos cards dos médicos (se quiser)
-        // configurarHoverMedico(view.getPanelMedico1(), ...);
+        AuxiliaryMethod.aplicarHoverLabel(view.getAllLabesDoctors(1), view.getAllBoxDoctors(1));
+        AuxiliaryMethod.aplicarHoverLabel(view.getAllLabesDoctors(2), view.getAllBoxDoctors(2));
+        AuxiliaryMethod.aplicarHoverLabel(view.getAllLabesDoctors(3), view.getAllBoxDoctors(3));
+        AuxiliaryMethod.aplicarHoverLabel(view.getAllLabesDoctors(4), view.getAllBoxDoctors(4));
         
         // Ações dos botões
-        configurarAcoes();
+        AuxiliaryMethod.configurarAcoes(view.getAllPanels(7), view);
+        AuxiliaryMethod.configurarAcoes(view.getAllPanels(8), view);
     }
-    
-    private void configurarAcoes() {
-        // Botão "Novo Agendamento"
-        view.getAllPanels(7).addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                AuxiliaryMethod.mostrarMensagemFlutuante(
-                    view, 
-                    "Funcionalidade em desenvolvimento", 
-                    300, 
-                    80
-                );
-            }
-        });
-        
-        // Botão "Lista de Agendados"
-        view.getAllPanels(8).addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                AuxiliaryMethod.mostrarMensagemFlutuante(
-                    view, 
-                    "Funcionalidade em desenvolvimento", 
-                    300, 
-                    80
-                );
-            }
-        });
-    }
-    
-    
     
 }
