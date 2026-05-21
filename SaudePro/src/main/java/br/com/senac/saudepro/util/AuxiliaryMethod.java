@@ -2,8 +2,12 @@ package br.com.senac.saudepro.util;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -213,6 +217,24 @@ public class AuxiliaryMethod {
         });
     }
     
+   public static void aplicarHoverLabel(JLabel label, RoundedPanel panel) {
+        if (label == null || panel == null) return;
+
+        Color hoverBK = new Color(0xA8E66B);
+
+        label.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                panel.setBackground(hoverBK);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                panel.setBackground(null);
+            }
+        });
+    }
+    
     
     // Em AuxiliaryMethod.java
     public static void buttonsHover(JLabel label, RoundedPanel panel, Color hover, Color normal) {
@@ -281,5 +303,135 @@ public class AuxiliaryMethod {
 
         panel.add(dateToday);
         panel.add(label);
+    }
+    
+    /**
+    * Diálogo de confirmação personalizado (estilo mensagem flutuante)
+    * @param viewFrame JFrame pai
+    * @param message Mensagem de confirmação
+    * @param width Largura do diálogo
+    * @param height Altura do diálogo
+    * @return true se usuário confirmou, false caso contrário
+    */
+    public static boolean mostrarConfirmacaoFlutuante(JFrame viewFrame, String message, int width, int height) {
+
+       // Criar o diálogo
+       JDialog dialogConfirm = new JDialog(viewFrame, "Confirmação", true);
+       dialogConfirm.setSize(width, height);
+       dialogConfirm.setLocationRelativeTo(viewFrame);
+       dialogConfirm.setUndecorated(true);
+       dialogConfirm.setLayout(new BorderLayout());
+
+       // Painel arredondado
+       RoundedPanel painel = new RoundedPanel(20);
+       painel.setBackground(Color.WHITE);
+       painel.setBorder(BorderFactory.createLineBorder(new Color(0x7ED348), 2));
+       painel.setLayout(new BorderLayout());
+
+       // Mensagem
+       JLabel mensagem = new JLabel(message, JLabel.CENTER);
+       mensagem.setFont(new Font("Arial", Font.PLAIN, 14));
+       mensagem.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
+       painel.add(mensagem, BorderLayout.CENTER);
+
+       // Painel dos botões
+       JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+       painelBotoes.setBackground(Color.WHITE);
+       painelBotoes.setBorder(BorderFactory.createEmptyBorder(0, 0, 15, 0));
+
+       // Botão Confirmar (Sim/Sair)
+       RoundedPanel btnConfirmar = new RoundedPanel(10);
+       btnConfirmar.setBackground(new Color(0x7ED348));
+       btnConfirmar.setPreferredSize(new Dimension(100, 35));
+       btnConfirmar.setLayout(new GridBagLayout());
+
+       JLabel lblConfirmar = new JLabel("Sim");
+       lblConfirmar.setFont(new Font("Arial", Font.BOLD, 14));
+       lblConfirmar.setForeground(Color.WHITE);
+       btnConfirmar.add(lblConfirmar);
+
+       // Botão Cancelar (Não)
+       RoundedPanel btnCancelar = new RoundedPanel(10);
+       btnCancelar.setBackground(Color.LIGHT_GRAY);
+       btnCancelar.setPreferredSize(new Dimension(100, 35));
+       btnCancelar.setLayout(new GridBagLayout());
+
+       JLabel lblCancelar = new JLabel("Não");
+       lblCancelar.setFont(new Font("Arial", Font.BOLD, 14));
+       lblCancelar.setForeground(Color.BLACK);
+       btnCancelar.add(lblCancelar);
+
+       painelBotoes.add(btnConfirmar);
+       painelBotoes.add(btnCancelar);
+       painel.add(painelBotoes, BorderLayout.SOUTH);
+
+       dialogConfirm.add(painel);
+
+       // Controle de resposta
+       final boolean[] resposta = {false};
+
+       // Ação do botão Confirmar
+       btnConfirmar.addMouseListener(new MouseAdapter() {
+           @Override
+           public void mouseClicked(MouseEvent e) {
+               resposta[0] = true;
+               dialogConfirm.dispose();
+           }
+
+           @Override
+           public void mouseEntered(MouseEvent e) {
+               btnConfirmar.setBackground(new Color(0x458C45));
+           }
+
+           @Override
+           public void mouseExited(MouseEvent e) {
+               btnConfirmar.setBackground(new Color(0x7ED348));
+           }
+       });
+
+       // Ação do botão Cancelar
+       btnCancelar.addMouseListener(new MouseAdapter() {
+           @Override
+           public void mouseClicked(MouseEvent e) {
+               resposta[0] = false;
+               dialogConfirm.dispose();
+           }
+
+           @Override
+           public void mouseEntered(MouseEvent e) {
+               btnCancelar.setBackground(new Color(200, 200, 200));
+           }
+
+           @Override
+           public void mouseExited(MouseEvent e) {
+               btnCancelar.setBackground(Color.LIGHT_GRAY);
+           }
+       });
+
+       // Cursores de mão
+       btnConfirmar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+       btnCancelar.setCursor(new Cursor(Cursor.HAND_CURSOR));
+
+       dialogConfirm.setVisible(true);
+
+       return resposta[0];
+   }
+    
+    
+    public static void configurarAcoes(JPanel panel, JFrame frame) {
+        
+        
+        // Botão "Novo Agendamento"
+        panel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                AuxiliaryMethod.mostrarMensagemFlutuante(
+                    frame, 
+                    "Funcionalidade em desenvolvimento", 
+                    300, 
+                    80
+                );
+            }
+        });
     }
 }
