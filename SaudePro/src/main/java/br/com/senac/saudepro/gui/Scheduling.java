@@ -147,6 +147,15 @@ public class Scheduling extends BaseView {
     
     // Container para posionar cada caixa do elemento medicos
     protected void containerOfDoctors(){
+        boxDoctor_1 = new RoundedPanel();
+        lbl_doctor_1 = new JLabel("Medico 1");
+        boxDoctor_2 = new RoundedPanel();
+        lbl_doctor_2 = new JLabel("Medico 2");
+        boxDoctor_3 = new RoundedPanel();
+        lbl_doctor_3 = new JLabel("Medico 3");
+        boxDoctor_4 = new RoundedPanel();
+        lbl_doctor_4 = new JLabel("Medico 4");
+        
         GridBagConstraints d = new GridBagConstraints();
         
         // ===== CONFIG DO CONTAINER =====
@@ -165,26 +174,18 @@ public class Scheduling extends BaseView {
         
         container.add(containerDocts, d);
         
-        
-        boxDoctor_1 = new RoundedPanel();
-        lbl_doctor_1 = new JLabel("Medico 1");
+
         lbl_areaDoctor_1 = new JLabel("especialista 1");
         boxDoctors(boxDoctor_1, lbl_doctor_1, lbl_areaDoctor_1, 0, 0);
 
-        boxDoctor_2 = new RoundedPanel();
-        lbl_doctor_2 = new JLabel("Medico 2");
         lbl_areaDoctor_2 = new JLabel("especialista 2");
         boxDoctors(boxDoctor_2, lbl_doctor_2, lbl_areaDoctor_2, 1, 0);
         
 
-        boxDoctor_3 = new RoundedPanel();
-        lbl_doctor_3 = new JLabel("Medico 3");
         lbl_areaDoctor_3 = new JLabel("especialista 3");
         boxDoctors(boxDoctor_3, lbl_doctor_3, lbl_areaDoctor_3, 2, 0);
         
 
-        boxDoctor_4 = new RoundedPanel();
-        lbl_doctor_4 = new JLabel("Medico 4");
         lbl_areaDoctor_4 = new JLabel("especialista 4");
         boxDoctors(boxDoctor_4, lbl_doctor_4, lbl_areaDoctor_4, 3, 0);
                 
@@ -404,6 +405,26 @@ public class Scheduling extends BaseView {
         return switch (selection) {
             case 7 -> panBtnNovoAgendamento;
             case 8 -> panListaAgendados;
+            default -> null;
+        };
+    }
+    
+    public RoundedPanel getAllBoxDoctors(int i){
+        return switch (i){
+            case 1 -> boxDoctor_1;
+            case 2 -> boxDoctor_2;
+            case 3 -> boxDoctor_3;
+            case 4 -> boxDoctor_4;
+            default -> null;
+        };
+    }
+    
+    public JLabel getAllLabesDoctors(int i){
+        return switch (i){
+            case 1 -> lbl_doctor_1;
+            case 2 -> lbl_doctor_2;
+            case 3 -> lbl_doctor_3;
+            case 4 -> lbl_doctor_4;
             default -> null;
         };
     }
