@@ -1,6 +1,5 @@
 package br.com.senac.saudepro.gui;
 
-import br.com.senac.saudepro.controller.HomeDashboardController;
 import br.com.senac.saudepro.util.AuxiliaryMethod;
 import br.com.senac.saudepro.util.IconTextField;
 import br.com.senac.saudepro.util.RoundedPanel;
