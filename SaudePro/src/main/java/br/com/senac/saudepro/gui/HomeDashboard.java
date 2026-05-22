@@ -462,14 +462,7 @@ public class HomeDashboard extends BaseView {
             logger.log(java.util.logging.Level.SEVERE, null, ex);
         }
         
-        java.awt.EventQueue.invokeLater(() -> {
-            HomeDashboard hd = new HomeDashboard();
-            
-            new HomeDashboardController(hd);
-            
-            hd.setVisible(true);
-            
-        });
+        java.awt.EventQueue.invokeLater(() -> new HomeDashboard().setVisible(true));
     }
     
     
