@@ -1,6 +1,7 @@
 package br.com.senac.saudepro.controller;
 
 import br.com.senac.saudepro.gui.HomeDashboard;
+import br.com.senac.saudepro.model.Users;
 import br.com.senac.saudepro.util.AuxiliaryMethod;
 import java.awt.Color;
 import java.awt.Cursor;
@@ -16,14 +17,17 @@ public class HomeDashboardController extends BaseViewController {
     private ImageIcon icoAddH;
     
     private HomeDashboard dashboard;
+    private Users usuarioLogado = new Users();
     
     private final Color SELECTED_COLOR = new Color(0x458C45);
     private final Color HOVER_COLOR = new Color(0x7ED348);
     
-    public HomeDashboardController(HomeDashboard hd) {
+    public HomeDashboardController(HomeDashboard hd, Users u) {
         super(hd);
         
         this.dashboard = hd;
+        
+        this.usuarioLogado = u;
         
         start();
     }
