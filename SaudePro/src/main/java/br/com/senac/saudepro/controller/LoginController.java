@@ -1,7 +1,9 @@
 package br.com.senac.saudepro.controller;
 
+import br.com.senac.saudepro.dao.UsersDAO;
 import br.com.senac.saudepro.gui.HomeDashboard;
 import br.com.senac.saudepro.gui.Login;
+import br.com.senac.saudepro.model.Users;
 import br.com.senac.saudepro.util.AuxiliaryMethod;
 import br.com.senac.saudepro.util.IconTextField;
 import br.com.senac.saudepro.util.RoundedPanel;
@@ -218,26 +220,26 @@ public class LoginController {
         
         scheduler.shutdown();
         
+        UsersDAO uDAO = new UsersDAO();
+        Users usuarioLogado = uDAO.validarLogin(user, pass);
         
         // Criar IF pra outra janela
-        if(!user.equals(placerUser) && !pass.equals(placerPass)){
+        if(!user.equals(placerUser) && !pass.equals(placerPass) || usuarioLogado != null){
             System.out.println("IR NOVA JANELA");
-
-            // Abrir Dashboard
-            HomeDashboard hd = new HomeDashboard();
+            AuxiliaryMethod.mostrarMensagemFlutuante(viewLogin, "Bem Vindo " + usuarioLogado.getNome(), 300, 80);
             
-            new HomeDashboardController(hd);
+            if(usuarioLogado.getTipo().equalsIgnoreCase("Recepcionista")){
+                openViewRecepcionista(usuarioLogado);
+                
+            }else if(usuarioLogado.getTipo().equalsIgnoreCase("Gerente")) {
+                openViewManager(usuarioLogado);
             
-            hd.setVisible(true);
-            if(viewLogin.getBoxLogin() != null){
-                viewLogin.getBoxLogin().removeAll();
+            }else{
+                openViewDoctor(usuarioLogado);
             }
             
-            // Fechar a tela de Login e FORÇAR limpeza
-            viewLogin.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            viewLogin.getBoxLogin().setVisible(false);
-            viewLogin.dispose();
-            
+        }else{
+            AuxiliaryMethod.mostrarMensagemFlutuante(viewLogin, "Usuario ou Senha Invalida!", 300, 80);
         }
     }
    
@@ -281,6 +283,29 @@ public class LoginController {
         });
     }
     
+    private void openViewManager(Users u){
+        AuxiliaryMethod.mostrarMensagemFlutuante(viewLogin, "Funcionalidade do Gerente em desenvolvimento", 400, 80);
+    }
     
+    private void openViewDoctor(Users u){
+        AuxiliaryMethod.mostrarMensagemFlutuante(viewLogin, "Funcionalidade dos Médicos em desenvolvimento", 400, 80);
+    }
+    
+    private void openViewRecepcionista(Users u){
+        // Abrir Dashboard
+            HomeDashboard hd = new HomeDashboard();
+            
+            new HomeDashboardController(hd, u);
+            
+            hd.setVisible(true);
+            if(viewLogin.getBoxLogin() != null){
+                viewLogin.getBoxLogin().removeAll();
+            }
+            
+            // Fechar a tela de Login e FORÇAR limpeza
+            viewLogin.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            viewLogin.getBoxLogin().setVisible(false);
+            viewLogin.dispose();
+    }
     
 }
