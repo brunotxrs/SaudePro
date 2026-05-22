@@ -5,6 +5,7 @@ import br.com.senac.saudepro.gui.HomeDashboard;
 import br.com.senac.saudepro.gui.Login;
 import br.com.senac.saudepro.gui.Register;
 import br.com.senac.saudepro.gui.Scheduling;
+import br.com.senac.saudepro.model.Users;
 import br.com.senac.saudepro.util.AuxiliaryMethod;
 import br.com.senac.saudepro.util.IconTextField;
 import br.com.senac.saudepro.util.RoundedPanel;
@@ -258,8 +259,8 @@ public abstract class BaseViewController {
         }
 
         HomeDashboard hd = new HomeDashboard();
-        
-        new HomeDashboardController(hd);
+        Users u = new Users();
+        new HomeDashboardController(hd, u);
         
         hd.setVisible(true);
         
