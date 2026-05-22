@@ -81,7 +81,7 @@ public class JPAUtil {
     /**
     * Fecha o EntityManager e o factory.
     */
-    public void closeEntityManager(){
+    public static void closeEntityManager(){
         if(em != null && !em.isOpen()){
             em.close();
         }
