@@ -1,0 +1,18 @@
+# Arquivo de configuração do banco (contém senha)
+
+# Pastas de build
+target/
+*.class
+
+# Arquivos do NetBeans
+nbproject/
+nb-configuration.xml
+
+# Arquivos do IntelliJ
+.idea/
+*.iml
+
+# Arquivos do Eclipse
+.project
+.classpath
+.settings/
