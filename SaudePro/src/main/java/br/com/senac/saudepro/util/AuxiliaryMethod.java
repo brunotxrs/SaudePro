@@ -434,4 +434,113 @@ public class AuxiliaryMethod {
             }
         });
     }
+    
+    /**
+    * Adiciona um KeyListener que formata o texto em tempo real.
+     * @param campo
+    * @param tipo Aceita "DATA" para aplicar a máscara correspondente.
+    */
+    public static void addMascaraDinamica(javax.swing.JTextField campo, String tipo) {
+        campo.addKeyListener(new java.awt.event.KeyAdapter() {
+            @Override
+            public void keyReleased(java.awt.event.KeyEvent e) {
+                // Se a tecla pressionada for Backspace, não formata (deixa apagar)
+                if (e.getKeyCode() == java.awt.event.KeyEvent.VK_BACK_SPACE) return;
+
+                String texto = campo.getText().replaceAll("[^0-9]", "");
+                StringBuilder formatado = new StringBuilder();
+
+                if (tipo.equals("CPF")) {
+                    if (texto.length() > 0) formatado.append(texto.substring(0, Math.min(texto.length(), 3)));
+                    if (texto.length() > 3) formatado.append(".").append(texto.substring(3, Math.min(texto.length(), 6)));
+                    if (texto.length() > 6) formatado.append(".").append(texto.substring(6, Math.min(texto.length(), 9)));
+                    if (texto.length() > 9) formatado.append("-").append(texto.substring(9, Math.min(texto.length(), 11)));
+                } else if (tipo.equals("DATA")) {
+                    if (texto.length() > 0) formatado.append(texto.substring(0, Math.min(texto.length(), 2)));
+                    if (texto.length() > 2) formatado.append("/").append(texto.substring(2, Math.min(texto.length(), 4)));
+                    if (texto.length() > 4) formatado.append("/").append(texto.substring(4, Math.min(texto.length(), 8)));
+                } else if (tipo.equals("TEL")) {
+                    // (00) 0 0000-0000
+                    if (texto.length() > 0) formatado.append("(").append(texto.substring(0, Math.min(texto.length(), 2)));
+                    if (texto.length() > 2) formatado.append(") ").append(texto.substring(2, Math.min(texto.length(), 3)));
+                    if (texto.length() > 3) formatado.append(" ").append(texto.substring(3, Math.min(texto.length(), 7)));
+                    if (texto.length() > 7) formatado.append("-").append(texto.substring(7, Math.min(texto.length(), 11)));
+                    // Ajuste extra para 11 dígitos (celular)
+                    if (texto.length() == 11) {
+                        String ddd = texto.substring(0, 2);
+                        String n1 = texto.substring(2, 7);
+                        String n2 = texto.substring(7, 11);
+                        formatado.setLength(0);
+                        formatado.append("(").append(ddd).append(") ").append(n1).append("-").append(n2);
+                    }
+                }   
+                
+                if (formatado.length() > 0) {
+                    campo.setText(formatado.toString());
+                }
+            }
+        });   
+    }
+    
+    // Ler e validar Nomes
+    public static String readValidName(JTextField paramTextField, JFrame frame, String s){
+        
+        String input = paramTextField.getText().trim();
+        String mgs;
+        
+        if(isValidString(input) != true){
+                mgs = s;
+            AuxiliaryMethod.mostrarMensagemFlutuante(frame, mgs, 300, 80);
+            
+        }
+        
+        return input;
+    }
+    
+    
+    // Validador de entrada para String não seja números
+    public static boolean isValidString(String promptName){
+        if (promptName.trim().isEmpty()) {
+            return false;
+        }
+
+        return promptName.trim().matches("[a-zA-Z\\s]+");
+    }
+    
+    public static boolean isValidNumber(String proString){
+        String n = proString.trim();
+        String input = n.replaceAll("[^0-9]", "");       
+        
+        if(input.trim().isEmpty()){
+            return false;
+        }
+        return input.trim().matches("\\d+");
+    }
+    
+        // Validar Telefones
+    public static String validRetornPhone(JTextField paramTextField, JFrame frame){
+        String input = paramTextField.getText().trim();
+        String mgs;
+        // Remove tudo que não é número
+        String cleanedInput = input.replaceAll("[^0-9]", "");
+        if (cleanedInput.isEmpty()) {
+            mgs = """
+                  O campo Telefone não pode estar vazio.
+                  E nem conter caracteres, 
+                  ex:[ Aa, Bb, Cc.. ]
+                  """;
+            AuxiliaryMethod.mostrarMensagemFlutuante(frame, mgs, 300, 80);
+            
+        }
+        
+        if (cleanedInput.length() < 10 || cleanedInput.length() > 11) {
+            mgs = """
+                  
+                  """;
+            AuxiliaryMethod.mostrarMensagemFlutuante(frame, mgs, 300, 80);
+        }
+        
+        return cleanedInput;
+    }
+    
 }
