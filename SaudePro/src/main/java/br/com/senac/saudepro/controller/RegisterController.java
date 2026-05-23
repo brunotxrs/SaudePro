@@ -53,18 +53,19 @@ public class RegisterController extends BaseViewController {
         AuxiliaryMethod.aplicateHover(r.getAllInputs(5), r.getAllPanels(5));
     
         AuxiliaryMethod.aplicarHover(r.getInpuintDetails(), r.getAllPanels(6));
-        
-        AuxiliaryMethod.buttonsHover(r.getAllLabels(1), r.getAllPanels(7), new Color(0x458C45), new Color(0x7ED348));
-        AuxiliaryMethod.buttonsHover(r.getAllLabels(2), r.getAllPanels(8), new Color(0x3182CE), new Color(0x4299E1));
-        AuxiliaryMethod.buttonsHover(r.getAllLabels(3), r.getAllPanels(9), new Color(0xED8936), new Color(0xF6AD55));
-    
+      
         // CURSOR DA MAOZINHA
         r.getAllPanels(7).setCursor(new Cursor(Cursor.HAND_CURSOR));
         r.getAllPanels(8).setCursor(new Cursor(Cursor.HAND_CURSOR));
         r.getAllPanels(9).setCursor(new Cursor(Cursor.HAND_CURSOR));
         
-        actionsButtons(r.getAllLabels(1), "Cadastrar");
+        baseView.getInputSearch().addActionListener(s -> searchPaciente());
         
+        
+        // Estado inicial: modo CADASTRO
+        gerenciarEstadoBotoes(false);  // false = modo cadastro
+
+        actionsButtons(r.getAllLabels(1), "Cadastrar");
         
     }
     
@@ -94,6 +95,71 @@ public class RegisterController extends BaseViewController {
                     System.out.println("EM DESENVOLVIMENTO");
                 }
             });
+        }
+        
+    }
+    
+    // Buscar
+    private void searchPaciente(){
+        
+        try {
+            String filter = baseView.getInputSearch().getText().trim();
+            
+            if(filter.contains("Buscar") || filter.isEmpty()){
+                filter = "";
+            }
+            
+            
+            //PacienteDAO pdao = new PacienteDAO();
+            
+            String filterClean = returnStringClear(filter);
+            
+            /* Paciente paciente = pdao.getPaciente(filterClean);*/
+
+             // Limpar filtro
+            String filtroLimpo = filter.replaceAll("[^a-zA-Z0-9]", "");
+
+            PacienteDAO pdao = new PacienteDAO();
+            Paciente paciente = null;
+
+            // Verificar se é CPF (apenas números e 11 dígitos) ou Nome
+            if (filtroLimpo.matches("\\d+") && filtroLimpo.length() == 11) {
+                // Buscar por CPF
+                paciente = pdao.getPacienteByCPF(filtroLimpo);
+            } else {
+                // Buscar por Nome
+                paciente = pdao.getPacienteByNane(filter);
+            }
+            
+            //  Verifica se a lista retornada é nula ou vazia
+            if(paciente == null){
+                String mgs = "Esse paciente nao esta cadastrado";
+                AuxiliaryMethod.mostrarMensagemFlutuante(r, mgs, 300, 80);
+                stateInitialize();
+                return;
+            }
+            
+            r.getAllInputs(1).setText(paciente.getNome());
+            r.getAllInputs(2).setText(paciente.getCpf());           
+            
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyy");
+            String data = paciente.getDataNascimento().format(formatter);
+            r.getAllInputs(3).setText(data);
+            r.getAllInputs(4).setText(paciente.getTelefone());
+            r.getAllInputs(5).setText(paciente.getEmail());
+            r.getInpuintDetails().setText(paciente.getObservacoes());
+            
+            r.getAllInputs(1).setForeground(Color.BLACK);
+            r.getAllInputs(2).setForeground(Color.BLACK);;           
+            r.getAllInputs(3).setForeground(Color.BLACK);
+            r.getAllInputs(4).setForeground(Color.BLACK);
+            r.getAllInputs(5).setForeground(Color.BLACK);
+            r.getInpuintDetails().setForeground(Color.BLACK);
+            
+            gerenciarEstadoBotoes(true);
+            
+        } catch (HeadlessException e) {
+            AuxiliaryMethod.mostrarMensagemFlutuante(r, "Ocorreu uma falha ao salvar: " + e.getMessage(), 300, 80);
         }
         
     }
@@ -243,8 +309,9 @@ public class RegisterController extends BaseViewController {
         AuxiliaryMethod.addMascaraDinamica(r.getAllInputs(4), "TEL");
         AuxiliaryMethod.setPlaceholder(r.getAllInputs(5), "ex: paciente@paciente.com");
         r.getInpuintDetails().setText("");
+        
+        gerenciarEstadoBotoes(false);
     }
-    
     
     private static String mensage(String campo, String tipo){
         String mgs ="<html>"
@@ -263,5 +330,39 @@ public class RegisterController extends BaseViewController {
         return cleanedInput;
     }
     
+    // Gerenciar estado dos botões baseado no modo (cadastro novo ou edição)
+    private void gerenciarEstadoBotoes(boolean modoEdicao) {
+        
+        
+        if (modoEdicao) {
+            // Modo EDIÇÃO: desabilita Cadastrar, habilita Atualizar e Deletar
+            r.getAllPanels(7).setEnabled(false);
+            r.getAllLabels(1).setEnabled(false);
+            r.getAllPanels(7).setBackground(Color.DARK_GRAY);
+
+            r.getAllPanels(8).setEnabled(true);
+            r.getAllPanels(9).setEnabled(true);
+            r.getAllPanels(8).setBackground(new Color(0x4299E1));
+            r.getAllPanels(9).setBackground(new Color(0xF6AD55));
+
+            // Reaplicar hover nos botões habilitados
+            AuxiliaryMethod.buttonsHover(r.getAllLabels(2), r.getAllPanels(8), new Color(0x3182CE), new Color(0x4299E1));
+            AuxiliaryMethod.buttonsHover(r.getAllLabels(3), r.getAllPanels(9), new Color(0xED8936), new Color(0xF6AD55));
+
+        } else {
+            // Modo CADASTRO: habilita Cadastrar, desabilita Atualizar e Deletar
+            r.getAllPanels(7).setEnabled(true);
+            r.getAllLabels(1).setEnabled(true);
+            r.getAllPanels(7).setBackground(new Color(0x7ED348));
+
+            r.getAllPanels(8).setEnabled(false);
+            r.getAllPanels(9).setEnabled(false);
+            r.getAllPanels(8).setBackground(Color.DARK_GRAY);
+            r.getAllPanels(9).setBackground(Color.DARK_GRAY);
+
+            // Reaplicar hover no botão Cadastrar
+            AuxiliaryMethod.buttonsHover(r.getAllLabels(1), r.getAllPanels(7), new Color(0x458C45), new Color(0x7ED348));
+        }
+    }
         
 }
