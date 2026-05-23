@@ -67,7 +67,6 @@ public class AuxiliaryMethod {
         });
     }
     
-   
     // Metodo pra exibir mensageDialog Personalisada Flutuante
     public static void mostrarMensagemFlutuante(JFrame viewFrame, String message, int width, int heigth) {
         
@@ -114,7 +113,6 @@ public class AuxiliaryMethod {
        p.setRoundedBorder(Color.GRAY, 1);
        iconField.setIcon(imageIcon);
     }
-    
     
     // Metodo para carrregar icones
     public static ImageIcon loadedIcone(String path, int width, int height) {
@@ -168,7 +166,6 @@ public class AuxiliaryMethod {
         
     }
     
-    
     private static void btnSelected(JPanel jp,  Color n, Color c){
         
         if(jp != null){
@@ -181,7 +178,6 @@ public class AuxiliaryMethod {
         jp.repaint();
         
     }
-    
     
     public static void aplicateHover(JTextField campo, RoundedPanel panel) {
         if (campo == null) return;
@@ -217,7 +213,7 @@ public class AuxiliaryMethod {
         });
     }
     
-   public static void aplicarHoverLabel(JLabel label, RoundedPanel panel) {
+    public static void aplicarHoverLabel(JLabel label, RoundedPanel panel) {
         if (label == null || panel == null) return;
 
         Color hoverBK = new Color(0xA8E66B);
@@ -235,7 +231,6 @@ public class AuxiliaryMethod {
         });
     }
     
-    
     // Em AuxiliaryMethod.java
     public static void buttonsHover(JLabel label, RoundedPanel panel, Color hover, Color normal) {
         if (label == null || panel == null) return;
@@ -252,7 +247,6 @@ public class AuxiliaryMethod {
             }
         });
     }
-    
     
     public static void showDateActual(JPanel panel, Color c, JLabel label){
         // Area de Data e Hora
@@ -482,22 +476,6 @@ public class AuxiliaryMethod {
         });   
     }
     
-    // Ler e validar Nomes
-    public static String readValidName(JTextField paramTextField, JFrame frame, String s){
-        
-        String input = paramTextField.getText().trim();
-        String mgs;
-        
-        if(isValidString(input) != true){
-                mgs = s;
-            AuxiliaryMethod.mostrarMensagemFlutuante(frame, mgs, 300, 80);
-            
-        }
-        
-        return input;
-    }
-    
-    
     // Validador de entrada para String não seja números
     public static boolean isValidString(String promptName){
         if (promptName.trim().isEmpty()) {
@@ -515,32 +493,6 @@ public class AuxiliaryMethod {
             return false;
         }
         return input.trim().matches("\\d+");
-    }
-    
-        // Validar Telefones
-    public static String validRetornPhone(JTextField paramTextField, JFrame frame){
-        String input = paramTextField.getText().trim();
-        String mgs;
-        // Remove tudo que não é número
-        String cleanedInput = input.replaceAll("[^0-9]", "");
-        if (cleanedInput.isEmpty()) {
-            mgs = """
-                  O campo Telefone não pode estar vazio.
-                  E nem conter caracteres, 
-                  ex:[ Aa, Bb, Cc.. ]
-                  """;
-            AuxiliaryMethod.mostrarMensagemFlutuante(frame, mgs, 300, 80);
-            
-        }
-        
-        if (cleanedInput.length() < 10 || cleanedInput.length() > 11) {
-            mgs = """
-                  
-                  """;
-            AuxiliaryMethod.mostrarMensagemFlutuante(frame, mgs, 300, 80);
-        }
-        
-        return cleanedInput;
     }
     
 }
