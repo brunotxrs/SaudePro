@@ -29,8 +29,8 @@ public class PacienteDAO {
         }
     }
     
-    // Buscar Paciente
-    public Paciente getPaciente(String cpf){
+    // Buscar Paciente pelo CPF
+    public Paciente getPacienteByCPF(String cpf){
         EntityManager em = JPAUtil.getEntityManager();
         
         try {
@@ -38,6 +38,27 @@ public class PacienteDAO {
             String jpql = "SELECT p FROM Paciente p WHERE p.cpf = :cpf";
             TypedQuery<Paciente> query = em.createQuery(jpql, Paciente.class);
             query.setParameter("cpf", cpf);
+            
+            return query.getSingleResult();
+            
+            
+        } catch (Exception e) {
+            System.err.println("Erro : " + e.getMessage());
+            return null;
+            
+        } finally {
+            JPAUtil.closeEntityManager();
+        }
+    }
+    
+    public Paciente getPacienteByNane(String nome){
+        EntityManager em = JPAUtil.getEntityManager();
+        
+        try {
+            
+            String jpql = "SELECT p FROM Paciente p WHERE p.nome = :nome";
+            TypedQuery<Paciente> query = em.createQuery(jpql, Paciente.class);
+            query.setParameter("nome", nome);
             
             return query.getSingleResult();
             
@@ -139,37 +160,19 @@ public class PacienteDAO {
     
     
     // Verifica se CPF já existe no banco
-public boolean isExist(String cpf) {
-    EntityManager em = JPAUtil.getEntityManager();
-    
-    try {
-        String jpql = "SELECT COUNT(p) FROM Paciente p WHERE p.cpf = :cpf";
-        TypedQuery<Long> query = em.createQuery(jpql, Long.class);
-        query.setParameter("cpf", cpf);
-        
-        Long count = query.getSingleResult();
-        return count > 0;
-        
-    } catch (Exception e) {
-        return false;
-    } finally {
-        JPAUtil.closeEntityManager();
-    }
-}
-
-    // Buscar por CPF (retorna o paciente ou null)
-    public Paciente getPacientePorCpf(String cpf) {
+    public boolean isExist(String cpf) {
         EntityManager em = JPAUtil.getEntityManager();
 
         try {
-            String jpql = "SELECT p FROM Paciente p WHERE p.cpf = :cpf";
-            TypedQuery<Paciente> query = em.createQuery(jpql, Paciente.class);
+            String jpql = "SELECT COUNT(p) FROM Paciente p WHERE p.cpf = :cpf";
+            TypedQuery<Long> query = em.createQuery(jpql, Long.class);
             query.setParameter("cpf", cpf);
 
-            return query.getSingleResult();
+            Long count = query.getSingleResult();
+            return count > 0;
 
         } catch (Exception e) {
-            return null;
+            return false;
         } finally {
             JPAUtil.closeEntityManager();
         }
