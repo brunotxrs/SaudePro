@@ -105,6 +105,31 @@ public abstract class BaseViewController {
         loadIcones();
         
         AuxiliaryMethod.setPlaceholder(baseView.getInputSearch(), "Buscar paciente por nome ou CPF...");
+        
+        
+        baseView.getInputSearch().addCaretListener(d -> {
+            try {
+                String texto = baseView.getInputSearch().getText().trim();
+
+                // Remover formatação anterior para análise
+                String textoLimpo = texto.replaceAll("[^a-zA-Z0-9]", "");
+
+                // Verificar se é CPF (apenas números e comprimento adequado)
+                if (textoLimpo.matches("\\d+") && textoLimpo.length() <= 11) {
+                    // Aplicar máscara de CPF
+                    AuxiliaryMethod.addMascaraDinamica(baseView.getInputSearch(), "CPF");
+                    String cpfFormatado = returnStringClear(textoLimpo);
+                    if (!texto.equals(cpfFormatado)) {
+                        baseView.getInputSearch().setText(cpfFormatado);
+                    }
+                }
+
+            } catch (IllegalStateException ex) {
+                // Ignorar - ocorre quando tenta modificar texto durante notificação
+                System.err.println("Ajuste de máscara ignorado: " + ex.getMessage());
+            }
+        });
+        
         aplicationHover(baseView.getInputSearch(), baseView.getAllIncons(6), iconSearchN, iconSearchH, baseView.getPlaceSearch());
    
         // CURSOR DA MAOZINHA
@@ -334,6 +359,12 @@ public abstract class BaseViewController {
         
         
         
+    }
+    
+    private static String returnStringClear(String s){
+        String input = s.trim();
+        String cleanedInput = input.replaceAll("[^0-9]", "");
+        return cleanedInput;
     }
     
 }
