@@ -238,12 +238,18 @@ public class AuxiliaryMethod {
         label.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                panel.setBackground(hover);
+                
+                if(panel.isEnabled()){
+                    panel.setBackground(hover);
+                }
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                panel.setBackground(normal);
+                if(panel.isEnabled()){
+                    panel.setBackground(normal);
+                }
+                
             }
         });
     }
