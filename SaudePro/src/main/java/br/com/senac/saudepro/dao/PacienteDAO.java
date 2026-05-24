@@ -107,8 +107,8 @@ public class PacienteDAO {
         
     }
     
-    // Deletar
-    public void deletar(String cpf){
+    // Deletar por CPF
+    public void deletarByCPF(String cpf){
         EntityManager em = JPAUtil.getEntityManager();
         
         try {
@@ -134,6 +134,32 @@ public class PacienteDAO {
         }
     }
     
+    // Deletar por nome
+    public void deletarByNome(String nome){
+        EntityManager em = JPAUtil.getEntityManager();
+        
+        try {
+            
+            // Buscar pelo CPF primeiro
+            String jpql = "SELECT p FROM Paciente p WHERE p.nome = :nome";
+            TypedQuery<Paciente> query = em.createQuery(jpql, Paciente.class);
+            query.setParameter("nome", nome);
+            
+            Paciente p = query.getSingleResult();
+            
+            if(p != null){
+                em.getTransaction().begin();
+                em.remove(p);
+                em.getTransaction().commit();
+            }
+            
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        } finally {
+            JPAUtil.closeEntityManager();
+        }
+    }
     
     // Deletar por ID
     public void deletarPorId(int id){
@@ -157,7 +183,6 @@ public class PacienteDAO {
             JPAUtil.closeEntityManager();
         }
     }
-    
     
     // Verifica se CPF já existe no banco
     public boolean isExist(String cpf) {
