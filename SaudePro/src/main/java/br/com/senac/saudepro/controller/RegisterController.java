@@ -404,6 +404,7 @@ public class RegisterController extends BaseViewController {
         // instancia do panciente nula
         this.pacienteOld = null;
         
+        AuxiliaryMethod.setPlaceholder(baseView.getInputSearch(), "");
         AuxiliaryMethod.setPlaceholder(r.getAllInputs(1), "Nome do Paciente");
         AuxiliaryMethod.setPlaceholder(r.getAllInputs(2), "ex: 000.000.000-00");
         AuxiliaryMethod.addMascaraDinamica(r.getAllInputs(2), "CPF");
