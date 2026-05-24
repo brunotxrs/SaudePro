@@ -69,6 +69,7 @@ public class RegisterController extends BaseViewController {
 
         actionsButtons(r.getAllLabels(1), "Cadastrar");
         actionsButtons(r.getAllLabels(2), "Atualizar");
+        actionsButtons(r.getAllLabels(3), "Deletar");
         
         
     }
@@ -80,7 +81,7 @@ public class RegisterController extends BaseViewController {
             label.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    cadastraNewOrAtualizarPaciente("Cadastrar");
+                    actionsForStatesPaciente("Cadastrar");
                 }
             });
         } else if("Atualizar".equals(nomeBotao)){
@@ -88,7 +89,7 @@ public class RegisterController extends BaseViewController {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     //add here
-                    cadastraNewOrAtualizarPaciente("Atualizar");
+                    actionsForStatesPaciente("Atualizar");
                 }
             });
         }else if("Deletar".equals(nomeBotao)){
@@ -96,7 +97,7 @@ public class RegisterController extends BaseViewController {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     //add here
-                    System.out.println("EM DESENVOLVIMENTO");
+                    actionsForStatesPaciente("Deletar");
                 }
             });
         }
@@ -178,7 +179,7 @@ public class RegisterController extends BaseViewController {
     
     
     //Cadastrar
-    private void cadastraNewOrAtualizarPaciente(String botao){
+    private void actionsForStatesPaciente(String botao){
         
         try {
             
@@ -306,7 +307,7 @@ public class RegisterController extends BaseViewController {
                 mm = "<html>"
                         +"<div style='text-align:center; 'width=300px'; height='45px'>" +
                             "O Paciente: " + newPaciente.getNome() + "<br>" +
-                            "Cadastrado com susseço" 
+                            "Cadastrado com " + "<span style='font-weight: bold;'>sucesso</span>" 
                         +"</div>" +
                     "</html>";
                 
@@ -316,7 +317,16 @@ public class RegisterController extends BaseViewController {
                 mm = "<html>"
                         +"<div style='text-align:center; 'width=300px'; height='45px'>" +
                             "O Paciente: " + newPaciente.getNome() + "<br>" +
-                            "Atualizado com susseço" 
+                            "Atualizado com " + "<span style='font-weight: bold;'>sucesso</span>"
+                        +"</div>" +
+                    "</html>";
+            }else if("Deletar".equals(botao)){
+                pdao.deletarPorId(newPaciente.getId());
+                // recebe a mengem
+                mm = "<html>"
+                        +"<div style='text-align:center; 'width=300px'; height='45px'>" +
+                            "O Paciente: " + newPaciente.getNome() + "<br>" +
+                            "Deletado com " + "<span style='font-weight: bold;'>sucesso</span>" 
                         +"</div>" +
                     "</html>";
             }
@@ -364,12 +374,6 @@ public class RegisterController extends BaseViewController {
         
         return mgs;
     }
-    
-    /*private static String returnStringClear(String s){
-    String input = s.trim();
-    String cleanedInput = input.replaceAll("[^0-9]", "");
-    return cleanedInput;
-    }*/
     
     // Gerenciar estado dos botões baseado no modo (cadastro novo ou edição)
     private void gerenciarEstadoBotoes(boolean modoEdicao) {
