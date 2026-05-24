@@ -55,7 +55,13 @@ public class Register extends BaseView {
     private static RoundedPanel panBtnDeletar;
     private static JLabel lblDeletar;
 
-    
+    private static ShadowPanel cardPanel_1;
+    private static ShadowPanel cardPanel_2;
+    private static ShadowPanel cardPanel_3;
+    private static ShadowPanel cardPanel_4;
+    private static ShadowPanel cardPanel_5;
+
+                    
     
     private static JLabel peopleCard_1; // - irei precisar no Controller
     private static JLabel peopleCard_2; // -  irei precisar no Controller
@@ -517,17 +523,26 @@ public class Register extends BaseView {
         peopleCard_4 = new JLabel("Paciente 4");
         peopleCard_5 = new JLabel("Paciente 5");
         
-        createCards(sideBarRight, peopleCard_1, 20, 145);
-        createCards(sideBarRight, peopleCard_2, 20, 245);
-        createCards(sideBarRight, peopleCard_3, 20, 345);
-        createCards(sideBarRight, peopleCard_4, 20, 445);
-        createCards(sideBarRight, peopleCard_5, 20, 545);
+        // Color for shadow
+        Color boxShadow = new Color(0, 0, 0, 80);
+        
+        cardPanel_1 = new ShadowPanel(8, 15,boxShadow);
+        cardPanel_2 = new ShadowPanel(8, 15,boxShadow);
+        cardPanel_3 = new ShadowPanel(8, 15,boxShadow);
+        cardPanel_4 = new ShadowPanel(8, 15,boxShadow);
+        cardPanel_5 = new ShadowPanel(8, 15,boxShadow);
+        
+        createCards(sideBarRight, cardPanel_1, peopleCard_1, 20, 145);
+        createCards(sideBarRight, cardPanel_2, peopleCard_2, 20, 245);
+        createCards(sideBarRight, cardPanel_3, peopleCard_3, 20, 345);
+        createCards(sideBarRight, cardPanel_4, peopleCard_4, 20, 445);
+        createCards(sideBarRight, cardPanel_5, peopleCard_5, 20, 545);
     }
     
     //=============================    
     // Cards de Proximos Atendimentos - Component Sidebar_Rigth
     //=============================
-    private void createCards(JPanel main,  JLabel u, int x, int y){
+    private void createCards(JPanel main, JPanel cardPanel,  JLabel u, int x, int y){
         JLabel label = new JLabel("Pacientes Recentes");
         label.setFont(new Font("Arial", Font.PLAIN, 17));
         label.setForeground(Color.BLACK);
@@ -540,10 +555,8 @@ public class Register extends BaseView {
 
         // Branco Gelo
         Color brancoGelo = new Color(0xF0F4F8);
-        // Color for shadow
-        Color boxShadow = new Color(0, 0, 0, 80);
         
-        ShadowPanel cardPanel = new ShadowPanel(8, 15,boxShadow);
+
         cardPanel.setLayout(null);
         cardPanel.setPreferredSize(new Dimension(260, 50));
         cardPanel.setBounds(x, y, 260, 50);
@@ -635,5 +648,28 @@ public class Register extends BaseView {
            case 3 -> lblDeletar;
            default -> null;
        };
+    }
+    
+    public JLabel getCardsPeoples(int i){
+        return switch (i){
+           case 1 -> peopleCard_1;
+           case 2 -> peopleCard_2;
+           case 3 -> peopleCard_3;
+           case 4 -> peopleCard_4;
+           case 5 -> peopleCard_5;               
+           default -> null;
+       };
+    }
+    
+    public ShadowPanel getCardPanel(int i){
+        return switch (i){
+           case 1 -> cardPanel_1;
+           case 2 -> cardPanel_2;
+           case 3 -> cardPanel_3;
+           case 4 -> cardPanel_4;
+           case 5 -> cardPanel_5;               
+           default -> null;
+       };
+    
     }
 }
