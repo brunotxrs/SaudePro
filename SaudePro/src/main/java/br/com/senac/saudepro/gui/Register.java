@@ -361,16 +361,7 @@ public class Register extends BaseView {
         input.setFont(new Font("Arial", Font.PLAIN, 18));
         input.setHorizontalAlignment(JTextField.LEFT);
         
-        // ===== ICON =====
-        /*        GridBagConstraints gbcIcon = new GridBagConstraints();
-        gbcIcon.gridx = c;
-        gbcIcon.gridy = l;
-        gbcIcon.insets = new Insets(0, 0, 0, 10); // espaçamento interno
-        gbcIcon.anchor = GridBagConstraints.WEST;
-        */
-        
         panel.add(input, gb1);
-        /*       panel.add(itf, gbcIcon);*/
         
         cont.add(panel, gb);
     }
