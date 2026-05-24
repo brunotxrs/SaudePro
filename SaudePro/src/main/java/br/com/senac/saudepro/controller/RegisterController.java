@@ -21,6 +21,8 @@ public class RegisterController extends BaseViewController {
     
     
     private Register r;
+    // instanciando paciente null para receber novos dados
+    private Paciente pacienteOld = null;
     
     public RegisterController(Register register) {
         super(register);
@@ -66,6 +68,8 @@ public class RegisterController extends BaseViewController {
         gerenciarEstadoBotoes(false);  // false = modo cadastro
 
         actionsButtons(r.getAllLabels(1), "Cadastrar");
+        actionsButtons(r.getAllLabels(2), "Atualizar");
+        
         
     }
     
@@ -76,7 +80,7 @@ public class RegisterController extends BaseViewController {
             label.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    cadastraNewPaciente();
+                    cadastraNewOrAtualizarPaciente("Cadastrar");
                 }
             });
         } else if("Atualizar".equals(nomeBotao)){
@@ -84,7 +88,7 @@ public class RegisterController extends BaseViewController {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     //add here
-                    System.out.println("EM DESENVOLVIMENTO");
+                    cadastraNewOrAtualizarPaciente("Atualizar");
                 }
             });
         }else if("Deletar".equals(nomeBotao)){
@@ -103,6 +107,10 @@ public class RegisterController extends BaseViewController {
     private void searchPaciente(){
         
         try {
+            
+            // instanciando paciente null para receber novos dados
+            Paciente paciente  = null;
+            
             String filter = baseView.getInputSearch().getText().trim();
             
             if(filter.contains("Buscar") || filter.isEmpty()){
@@ -112,7 +120,7 @@ public class RegisterController extends BaseViewController {
             
             //PacienteDAO pdao = new PacienteDAO();
             
-            String filterClean = returnStringClear(filter);
+            String filterClean = AuxiliaryMethod.returnStringClear(filter);
             
             /* Paciente paciente = pdao.getPaciente(filterClean);*/
 
@@ -120,7 +128,7 @@ public class RegisterController extends BaseViewController {
             String filtroLimpo = filter.replaceAll("[^a-zA-Z0-9]", "");
 
             PacienteDAO pdao = new PacienteDAO();
-            Paciente paciente = null;
+            
 
             // Verificar se é CPF (apenas números e 11 dígitos) ou Nome
             if (filtroLimpo.matches("\\d+") && filtroLimpo.length() == 11) {
@@ -156,7 +164,11 @@ public class RegisterController extends BaseViewController {
             r.getAllInputs(5).setForeground(Color.BLACK);
             r.getInpuintDetails().setForeground(Color.BLACK);
             
+            // primeira instancia de paciente receber os dados apos pesquesidos;
+            this.pacienteOld = paciente;
+            
             gerenciarEstadoBotoes(true);
+            
             
         } catch (HeadlessException e) {
             AuxiliaryMethod.mostrarMensagemFlutuante(r, "Ocorreu uma falha ao salvar: " + e.getMessage(), 300, 80);
@@ -166,7 +178,7 @@ public class RegisterController extends BaseViewController {
     
     
     //Cadastrar
-    private void cadastraNewPaciente(){
+    private void cadastraNewOrAtualizarPaciente(String botao){
         
         try {
             
@@ -184,7 +196,7 @@ public class RegisterController extends BaseViewController {
                 return;
             }
 
-            String cpf = returnStringClear(r.getAllInputs(2).getText().trim());
+            String cpf = AuxiliaryMethod.returnStringClear(r.getAllInputs(2).getText().trim());
             //condiçoes checar se nao esta vazio| ou conter Letras | ou ser maior ou menor que 11    
             if(cpf.contains("00000000000") || cpf.isEmpty()){
                 String mgs = "O Campo CPF* nao deve esta vazio!";
@@ -201,7 +213,7 @@ public class RegisterController extends BaseViewController {
                 return;
             }
 
-            String data = returnStringClear(r.getAllInputs(3).getText().trim());
+            String data = AuxiliaryMethod.returnStringClear(r.getAllInputs(3).getText().trim());
             // Variaveis para validação lógica referente a dia e mes
             int dia = Integer.parseInt(data.substring(0, 2));
             int mes = Integer.parseInt(data.substring(2, 4));
@@ -227,7 +239,7 @@ public class RegisterController extends BaseViewController {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("ddMMyyyy");
             LocalDate dbData = LocalDate.parse(data, formatter);
             
-            String telefone = returnStringClear(r.getAllInputs(4).getText().trim());
+            String telefone = AuxiliaryMethod.returnStringClear(r.getAllInputs(4).getText().trim());
             //condiçoes checar se nao esta vazio| ou conter Letras | telefomne esta entre 10 a  11  
             if(telefone.contains("ex:") || telefone.isEmpty()){
                 String mgs = "O Campo TELEFONE* nao deve esta vazio!";
@@ -256,9 +268,15 @@ public class RegisterController extends BaseViewController {
             
             String observation = r.getInpuintDetails().getText().trim();
             
-            
-            // instaciando novo paciente
+            // Instanciando novo paciente
             Paciente newPaciente = new Paciente();
+
+            // Condiçao se novo paciente for nulo ele receber o antigo dados pesquisados
+            if(pacienteOld != null){
+                newPaciente = pacienteOld;
+            }
+            
+            // recebem os dados
             newPaciente.setNome(nome);
             newPaciente.setCpf(cpf);
             newPaciente.setDataNascimento(dbData);
@@ -266,31 +284,50 @@ public class RegisterController extends BaseViewController {
             newPaciente.setEmail(email);
             newPaciente.setObservacoes(observation);
             
-            // salvando ao db
+            // instancia do DAO para o db
             PacienteDAO pdao = new PacienteDAO();
             
-            boolean pac = pdao.isExist(newPaciente.getCpf()); 
+            // String de mensagem
+            String mm = null;
             
-            if(pdao.isExist(cpf)){
+            // condiçao se paciente da primeira instancia estiver nulo ele recebe novo paciente cadastrando novo
+            if(pacienteOld == null && "Cadastrar".equals(botao)){
+                // varialvel de checagem de duplicidade
+                boolean pac = pdao.isExist(newPaciente.getCpf()); 
                 
-                AuxiliaryMethod.mostrarMensagemFlutuante(r, "Esse Paciente: Já se encontra cadastrado", 300, 80);
-                return;
-            }
-                
-            pdao.cadastrarPaciente(newPaciente);
-            
-            String mm = "<html>"
+                // condiçao pra checagem de duplicidade
+                if(pdao.isExist(cpf)){
+                    AuxiliaryMethod.mostrarMensagemFlutuante(r, "Esse Paciente: Já se encontra cadastrado", 300, 80);
+                    return;
+                }
+                // cadastra novo paciente
+                pdao.cadastrarPaciente(newPaciente);
+                // recebe a mengem
+                mm = "<html>"
                         +"<div style='text-align:center; 'width=300px'; height='45px'>" +
-                            "O Paciente:" + newPaciente.getNome() + "<br>" +
+                            "O Paciente: " + newPaciente.getNome() + "<br>" +
                             "Cadastrado com susseço" 
                         +"</div>" +
-                        "</html>";
+                    "</html>";
+                
+            }else if("Atualizar".equals(botao)){ // condiçao para atualizar
+                pdao.updatePaciente(newPaciente); // atualiza
+                // recebe a mengem
+                mm = "<html>"
+                        +"<div style='text-align:center; 'width=300px'; height='45px'>" +
+                            "O Paciente: " + newPaciente.getNome() + "<br>" +
+                            "Atualizado com susseço" 
+                        +"</div>" +
+                    "</html>";
+            }
+            
 
-            AuxiliaryMethod.mostrarMensagemFlutuante(r, " " + newPaciente.getNome() + " ", 350, 80);
-
+            // Lança a mensagem
+            AuxiliaryMethod.mostrarMensagemFlutuante(r, mm, 350, 80);
+            
+            // estado inicial
             stateInitialize();                
 
-            
             
         } catch (HeadlessException e) {
             AuxiliaryMethod.mostrarMensagemFlutuante(r, "Ocorreu uma falha ao salvar: " + e.getMessage(), 300, 80);
@@ -298,8 +335,11 @@ public class RegisterController extends BaseViewController {
         
     }
     
-    
+    // metodo pra estado inicial da tela
     private void stateInitialize(){
+        // instancia do panciente nula
+        this.pacienteOld = null;
+        
         AuxiliaryMethod.setPlaceholder(r.getAllInputs(1), "Nome do Paciente");
         AuxiliaryMethod.setPlaceholder(r.getAllInputs(2), "ex: 000.000.000-00");
         AuxiliaryMethod.addMascaraDinamica(r.getAllInputs(2), "CPF");
@@ -313,6 +353,7 @@ public class RegisterController extends BaseViewController {
         gerenciarEstadoBotoes(false);
     }
     
+    // Metodo de mensagem 
     private static String mensage(String campo, String tipo){
         String mgs ="<html>"
                     +"<div style='text-align:center; 'width=300px'; height='45px'>" +
@@ -324,11 +365,11 @@ public class RegisterController extends BaseViewController {
         return mgs;
     }
     
-    private static String returnStringClear(String s){
-        String input = s.trim();
-        String cleanedInput = input.replaceAll("[^0-9]", "");
-        return cleanedInput;
-    }
+    /*private static String returnStringClear(String s){
+    String input = s.trim();
+    String cleanedInput = input.replaceAll("[^0-9]", "");
+    return cleanedInput;
+    }*/
     
     // Gerenciar estado dos botões baseado no modo (cadastro novo ou edição)
     private void gerenciarEstadoBotoes(boolean modoEdicao) {
