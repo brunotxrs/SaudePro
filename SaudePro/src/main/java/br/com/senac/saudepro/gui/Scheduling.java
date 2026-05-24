@@ -1,121 +1,83 @@
 package br.com.senac.saudepro.gui;
 
 import br.com.senac.saudepro.controller.SchedulingController;
+import br.com.senac.saudepro.model.Medico;
 import br.com.senac.saudepro.util.AuxiliaryMethod;
+import br.com.senac.saudepro.util.CompactCalendarPanel;
 import br.com.senac.saudepro.util.RoundedPanel;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Image;
-import java.awt.Insets;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import br.com.senac.saudepro.util.ShadowPanel;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 
-/**
- * Tela de Agendamento
- * @author bruno-teixeira
- */
 public class Scheduling extends BaseView {
-        private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Scheduling.class.getName());
-        
-        
-    //=============================
-    // Componentes principais - Serem Usados no [ CONTROLLER ]
-    private static JPanel panelScheduling;
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(Scheduling.class.getName());
     
+    // Componentes principais
+    private static JPanel panelScheduling;
     private static RoundedPanel container;
     private static RoundedPanel containerButtons;
-    private static RoundedPanel containerDocts;
-    private static RoundedPanel boxDoctor_1;
-    private static RoundedPanel boxDoctor_2;
-    private static RoundedPanel boxDoctor_3;
-    private static RoundedPanel boxDoctor_4;
-
+    private static JPanel containerDoctors;
+    
+    // Componentes dinâmicos para médicos
+    private JPanel panelCardsContainer;      // Container dos cards com FlowLayout
+    private JScrollPane scrollPaneMedicos;   // Scroll horizontal
+    private List<ShadowPanel> cardsMedicos = new ArrayList<>();     // Lista dinâmica de cards
+    private List<JLabel> labelsNomes = new ArrayList<>();           // Lista de nomes
+    private List<JLabel> labelsEspecialidades = new ArrayList<>();  // Lista de especialidades
+    private List<Integer> medicosIds = new ArrayList<>();           // IDs dos médicos
+    
+    // Botões
     private static RoundedPanel panBtnNovoAgendamento;
     private static JLabel lblNovoAgendamento;
     private static RoundedPanel panListaAgendados;
-    private static JLabel lblListaAgendados;  
+    private static JLabel lblListaAgendados;
     
-    
-    private static JLabel lbl_doctor_1;
-    private static JLabel lbl_doctor_2;
-    private static JLabel lbl_doctor_3;
-    private static JLabel lbl_doctor_4;
-    
-    private static JLabel lbl_areaDoctor_1;
-    private static JLabel lbl_areaDoctor_2;
-    private static JLabel lbl_areaDoctor_3;
-    private static JLabel lbl_areaDoctor_4;
-    
+    private static JLabel doctorSelected;
+    private static JLabel doctorAreaSelected;
     
     private static String _PARTH_IMG_CALENDER = "src/main/java/resources/img/calendar_month_background.png";
-    //=============================    
     private static JLabel calendarioImagem;
-    
     private final Color greenColor = new Color(0x458C45);
     
     public Scheduling() {
-        
         initComponents();
-        
-        
-    
     }
     
-    
-    private void initComponents(){
+    private void initComponents() {
         String title = "Agendamento - SaúdePro";
         configurationFrame(title);
-    
         panelScheduling = new JPanel();
-        
         configurationPanelScreen(panelScheduling);
     }
-
     
-    //=============================    
-    // configuraçao o Jrame
-    //=============================
     @Override
     protected void configurationFrame(String title) {
         super.configurationFrame(title);
     }
     
-    //=============================    
-    // criando o Painel
-    //=============================
     @Override
     protected void configurationPanelScreen(JPanel panel) {
         super.configurationPanelScreen(panel);
-        
-        
         createSideBarLeft(panelScheduling);
-        
         createBodyMain(panelScheduling);
-        
         createSideBarRigth(panelScheduling);
     }
-
+    
     @Override
     protected void createSideBarLeft(JPanel panel) {
         super.createSideBarLeft(panel);
     }
-
+    
     @Override
     protected void createBodyMain(JPanel panel) {
-        super.createBodyMain(panel); 
-        
+        super.createBodyMain(panel);
         componentSearch();
-        
         componentPanelBody();
     }
-
-    //=============================
-    // Panel Register Informations
-    //=============================
+    
     private void componentPanelBody() {
         GridBagConstraints gContainer = new GridBagConstraints();
         
@@ -124,162 +86,211 @@ public class Scheduling extends BaseView {
         container.setPreferredSize(new Dimension(0, 450));
         container.setLayout(new GridBagLayout());
         
-        // ===== CONFIG DO CONTAINER =====
         gContainer.gridx = 0;
         gContainer.gridy = 1;
-        gContainer.insets = new java.awt.Insets(5, 20, 0, 20); // Espaçamento externo (MARGEM)
-        gContainer.weightx = 1; // Crescer horizontalmente
-        gContainer.weighty = 0; // NÃO crescer verticalmente
+        gContainer.insets = new Insets(5, 20, 0, 20);
+        gContainer.weightx = 1;
+        gContainer.weighty = 0;
         gContainer.fill = GridBagConstraints.HORIZONTAL;
-        //===============================
         
         bodyMain.add(container, gContainer);
         
-        // Container dos Medicos
-        containerOfDoctors();
+        // Container com scroll horizontal para médicos
+        containerOfDoctorsDinamico();
         
-        // aqui o elemento de dentro do body container
+        // Container de background (calendário)
         containerBackground();
-
-        // ADD COMPONENTES        
+        
+        // Botões
         containerButton();
     }
     
-    // Container para posionar cada caixa do elemento medicos
-    protected void containerOfDoctors(){
-        boxDoctor_1 = new RoundedPanel();
-        lbl_doctor_1 = new JLabel("Medico 1");
-        boxDoctor_2 = new RoundedPanel();
-        lbl_doctor_2 = new JLabel("Medico 2");
-        boxDoctor_3 = new RoundedPanel();
-        lbl_doctor_3 = new JLabel("Medico 3");
-        boxDoctor_4 = new RoundedPanel();
-        lbl_doctor_4 = new JLabel("Medico 4");
-        
+    /**
+     * Cria container com scroll horizontal para os cards de médicos
+     */
+    private void containerOfDoctorsDinamico() {
         GridBagConstraints d = new GridBagConstraints();
-        
-        // ===== CONFIG DO CONTAINER =====
         d.gridx = 0;
         d.gridy = 0;
-        d.insets = new java.awt.Insets(5, 20, 0, 20); // Espaçamento externo (MARGEM)
-        d.weightx = 1; // Crescer horizontalmente
-        d.weighty = 0; // NÃO crescer verticalmente
+        d.insets = new Insets(5, 20, 5, 20);
+        d.weightx = 1;
+        d.weighty = 0;
         d.fill = GridBagConstraints.HORIZONTAL;
         
-        containerDocts = new RoundedPanel();
-        containerDocts.setBackground(null);
-        containerDocts.setPreferredSize(new Dimension(0, 97));
-        containerDocts.setBorder(null);
-        containerDocts.setLayout(new GridBagLayout());
+        // Container principal dos cards
+        panelCardsContainer = new JPanel();
+        panelCardsContainer.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 15));
+        panelCardsContainer.setBackground(Color.WHITE);
+        panelCardsContainer.setBorder(new EmptyBorder(10, 10, 10, 10));
         
-        container.add(containerDocts, d);
+        // ScrollPane horizontal
+        scrollPaneMedicos = new JScrollPane(panelCardsContainer);
+        scrollPaneMedicos.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scrollPaneMedicos.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+        scrollPaneMedicos.setBorder(null);
+        scrollPaneMedicos.setPreferredSize(new Dimension(0, 130));
+        scrollPaneMedicos.getHorizontalScrollBar().setUnitIncrement(20);
         
+        // Estilizar a barra
+        JScrollBar barra = scrollPaneMedicos.getHorizontalScrollBar();
+        barra.setPreferredSize(new Dimension(0, 8));
+        barra.setBackground(new Color(0xF0F0F0));
+        barra.setForeground(new Color(0x7ED348));
+        barra.setBorder(BorderFactory.createEmptyBorder());
 
-        lbl_areaDoctor_1 = new JLabel("especialista 1");
-        boxDoctors(boxDoctor_1, lbl_doctor_1, lbl_areaDoctor_1, 0, 0);
-
-        lbl_areaDoctor_2 = new JLabel("especialista 2");
-        boxDoctors(boxDoctor_2, lbl_doctor_2, lbl_areaDoctor_2, 1, 0);
+        scrollPaneMedicos.setPreferredSize(new Dimension(0, 140));
+        scrollPaneMedicos.getHorizontalScrollBar().setUnitIncrement(20);
         
-
-        lbl_areaDoctor_3 = new JLabel("especialista 3");
-        boxDoctors(boxDoctor_3, lbl_doctor_3, lbl_areaDoctor_3, 2, 0);
-        
-
-        lbl_areaDoctor_4 = new JLabel("especialista 4");
-        boxDoctors(boxDoctor_4, lbl_doctor_4, lbl_areaDoctor_4, 3, 0);
-                
-        
-        
-        
-        
+        container.add(scrollPaneMedicos, d);
     }
     
-    // create of the box for doctors
-    protected void boxDoctors(RoundedPanel panel, JLabel prof, JLabel area, int c, int l){
-        GridBagConstraints d = new GridBagConstraints();
+    /**
+     * Cria cards dinamicamente baseado na lista de médicos
+     */
+    public void criarCardsMedicos(List<br.com.senac.saudepro.model.Medico> medicos) {
+        // Limpar cards antigos
+        cardsMedicos.clear();
+        labelsNomes.clear();
+        labelsEspecialidades.clear();
+        medicosIds.clear();
+        panelCardsContainer.removeAll();
         
-        // ===== CONFIG DO CONTAINER =====
-        d.gridx = c;
-        d.gridy = l;
-        d.insets = new java.awt.Insets(20, 20, 20, 20); // Espaçamento externo (MARGEM)
-        d.weightx = 0; // Crescer horizontalmente
-        d.weighty = 1; // NÃO crescer verticalmente
-        d.fill = GridBagConstraints.VERTICAL;
+        if (medicos == null || medicos.isEmpty()) {
+            // Mostrar mensagem quando não há médicos
+            JLabel msgLabel = new JLabel("Nenhum médico cadastrado no sistema");
+            msgLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+            msgLabel.setForeground(Color.GRAY);
+            panelCardsContainer.add(msgLabel);
+        } else {
+            // Criar um card para cada médico
+            for (Medico medico : medicos) {
+                criarCardMedico(medico);
+            }
+        }
         
-        panel.setPreferredSize(new Dimension(100, 0));
-        panel.setBackground(null);
-        
-        prof.setFont(new Font("Arial", Font.BOLD, 16));
-        prof.setForeground(Color.BLACK);
-        prof.setBounds(0, 0, 150, 25);
-        
-        panel.add(prof);
-        
-        area.setFont(new Font("Arial", Font.PLAIN, 12));
-        area.setForeground(Color.LIGHT_GRAY);
-        area.setBounds(0, 0, 150, 25);
-        
-        panel.add(area);
-        
-        containerDocts.add(panel, d);
-        
+        // Atualizar o container
+        panelCardsContainer.revalidate();
+        panelCardsContainer.repaint();
     }
     
+    /**
+     * Cria um card individual para um médico
+     */
+    private void criarCardMedico(Medico medico) {
+        // ShadowPanel para o card
+        ShadowPanel cardPanel = new ShadowPanel(8, 15, new Color(0, 0, 0, 80));
+        cardPanel.setPreferredSize(new Dimension(180, 90));
+        cardPanel.setBackground(Color.WHITE);
+        cardPanel.setLayout(new BorderLayout(10, 5));
+        cardPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        
+        // Ícone do médico
+        JLabel iconeLabel = new JLabel("👨‍⚕️", SwingConstants.CENTER);
+        iconeLabel.setFont(new Font("Segoe UI", Font.PLAIN, 32));
+        
+        // Painel de informações
+        JPanel infoPanel = new JPanel(new GridLayout(3, 1, 0, 2));
+        infoPanel.setOpaque(false);
+        infoPanel.setBorder(new EmptyBorder(5, 0, 5, 5));
+        
+        // Nome do médico
+        JLabel nomeLabel = new JLabel(medico.getNome());
+        nomeLabel.setFont(new Font("Arial", Font.BOLD, 12));
+        nomeLabel.setForeground(Color.BLACK);
+        
+        // Especialidade
+        JLabel especialidadeLabel = new JLabel(medico.getEspecialidade());
+        especialidadeLabel.setFont(new Font("Arial", Font.PLAIN, 10));
+        especialidadeLabel.setForeground(new Color(0x458C45));
+        
+        // CRM
+        JLabel crmLabel = new JLabel("CRM: " + medico.getCrm());
+        crmLabel.setFont(new Font("Arial", Font.PLAIN, 9));
+        crmLabel.setForeground(Color.GRAY);
+        
+        infoPanel.add(nomeLabel);
+        infoPanel.add(especialidadeLabel);
+        infoPanel.add(crmLabel);
+        
+        cardPanel.add(iconeLabel, BorderLayout.WEST);
+        cardPanel.add(infoPanel, BorderLayout.CENTER);
+        
+        // Armazenar referências
+        cardsMedicos.add(cardPanel);
+        labelsNomes.add(nomeLabel);
+        labelsEspecialidades.add(especialidadeLabel);
+        medicosIds.add(medico.getId());
+        
+        // Adicionar ao container
+        panelCardsContainer.add(cardPanel);
+    }
     
-    // Container de background
-    protected void containerBackground(){
+    /**
+     * Retorna o ID do médico pelo índice do card
+     */
+    public int getIdMedicoPorIndice(int indice) {
+        if (indice >= 0 && indice < medicosIds.size()) {
+            return medicosIds.get(indice);
+        }
+        return -1;
+    }
+    
+    /**
+     * Retorna a lista de cards para adicionar eventos no controller
+     */
+    public List<ShadowPanel> getCardsMedicos() {
+        return cardsMedicos;
+    }
+    
+    /**
+     * Retorna a lista de nomes dos médicos
+     */
+    public List<JLabel> getLabelsNomes() {
+        return labelsNomes;
+    }
+    
+    private void containerBackground() {
         GridBagConstraints b = new GridBagConstraints();
-
         b.gridx = 0;
         b.gridy = 1;
-        b.insets = new java.awt.Insets(0, 20, 10, 20);
+        b.insets = new Insets(0, 20, 10, 20);
         b.weightx = 1;
         b.weighty = 1;
         b.fill = GridBagConstraints.BOTH;
-
+        
         JPanel cont = new JPanel();
         cont.setLayout(new GridBagLayout());
         cont.setBackground(null);
-
-         // Inicializar a imagem
+        
         ImageIcon icon = new ImageIcon(_PARTH_IMG_CALENDER);
         Image img = icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
         calendarioImagem = new JLabel(new ImageIcon(img));
         calendarioImagem.setHorizontalAlignment(JLabel.CENTER);
-         
-         
-        // IMAGEM ALINHAMENTO
+        
         GridBagConstraints imgConstraints = new GridBagConstraints();
         imgConstraints.gridx = 0;
         imgConstraints.gridy = 0;
         imgConstraints.weightx = 1;
         imgConstraints.weighty = 1;
         imgConstraints.anchor = GridBagConstraints.CENTER;
-
         cont.add(calendarioImagem, imgConstraints);
-
-        // Texto abaixo da imagem
-        JLabel lblInfo = new JLabel("Selecione um Medico para novo agendamento ou ver lista de agendados.");
+        
+        JLabel lblInfo = new JLabel("Selecione um médico para novo agendamento");
         lblInfo.setFont(new Font("Arial", Font.PLAIN, 20));
         lblInfo.setForeground(Color.GRAY);
-
+        
         GridBagConstraints textConstraints = new GridBagConstraints();
         textConstraints.gridx = 0;
         textConstraints.gridy = 1;
         textConstraints.weightx = 0;
         textConstraints.anchor = GridBagConstraints.CENTER;
         textConstraints.insets = new Insets(5, 0, 100, 0);
-
         cont.add(lblInfo, textConstraints);
-
+        
         container.add(cont, b);
     }
     
-    
-    
-   // ==== CONTAINER BTNS =====
-    protected void containerButton(){
+    protected void containerButton() {
         GridBagConstraints g = new GridBagConstraints();
         
         containerButtons = new RoundedPanel(20);
@@ -288,120 +299,156 @@ public class Scheduling extends BaseView {
         containerButtons.setBorder(null);
         containerButtons.setLayout(new GridBagLayout());
         
-        // ===== CONFIG DO CONTAINER =====
         g.gridx = 0;
         g.gridy = 2;
-        g.insets = new java.awt.Insets(5, 20, 0, 20); // Espaçamento externo (MARGEM)
-        g.weightx = 1; // Crescer horizontalmente
-        g.weighty = 0; // NÃO crescer verticalmente
+        g.insets = new Insets(5, 20, 0, 20);
+        g.weightx = 1;
+        g.weighty = 0;
         g.fill = GridBagConstraints.HORIZONTAL;
         
         bodyMain.add(containerButtons, g);
         
-        // ADD BTNs
         panBtnNovoAgendamento = new RoundedPanel(10);
         lblNovoAgendamento = new JLabel("Novo Agendamento");
-        createButtoms(0, 0, 0, 0, 0, 0, panBtnNovoAgendamento, lblNovoAgendamento, Color.DARK_GRAY);
+        createButtoms(0, 0, panBtnNovoAgendamento, lblNovoAgendamento, Color.DARK_GRAY);
         
         panListaAgendados = new RoundedPanel(10);
         lblListaAgendados = new JLabel("Lista de Agendados");
-        createButtoms(1, 0, 0, 0, 0, 0, panListaAgendados, lblListaAgendados, Color.DARK_GRAY);
+        createButtoms(1, 0, panListaAgendados, lblListaAgendados, Color.DARK_GRAY);
         
-        // ===== MENSAGEM ALERT
         GridBagConstraints m = new GridBagConstraints();
-        
-        JLabel mgs = new JLabel("Selecione um Medico para novo agendamento ou ver lista de agendados.");
+        JLabel mgs = new JLabel("Clique em um médico para iniciar o agendamento");
         mgs.setFont(new Font("Arial", Font.PLAIN, 14));
         mgs.setForeground(Color.BLACK);
-        mgs.setBounds(0, 0, 0, 34);
         
-        // ===== CONFIG DO MESSAGE =====
         m.gridx = 0;
         m.gridy = 3;
-        m.insets = new java.awt.Insets(5, 20, 0, 20); // Espaçamento externo (MARGEM)
-        m.weightx = 1; // Crescer horizontalmente
-        m.weighty = 0; // NÃO crescer verticalmente
+        m.insets = new Insets(5, 20, 0, 20);
+        m.weightx = 1;
+        m.weighty = 0;
         m.fill = GridBagConstraints.HORIZONTAL;
-        
         bodyMain.add(mgs, m);
-        
     }
     
-     // ====== ELEMENTS BTNS
-    protected void createButtoms(int c, int l, int h, int v, int h1, int v1, RoundedPanel panel, JLabel label, Color bColor){
-        
+    protected void createButtoms(int c, int l, RoundedPanel panel, JLabel label, Color bColor) {
         GridBagConstraints gb = new GridBagConstraints();
-        gb.gridx = c; // c
-        gb.gridy = l; // l
-        gb.insets = new java.awt.Insets(0, 20, 0, 20); // Espaçamento externo (MARGEM)
-        gb.weightx = 1; // NÃO Crescer horizontalmente
-        gb.weighty = v; // NÃO crescer verticalmente
+        gb.gridx = c;
+        gb.gridy = l;
+        gb.insets = new Insets(0, 20, 0, 20);
+        gb.weightx = 1;
         gb.fill = GridBagConstraints.HORIZONTAL;
         
         panel.setBackground(bColor);
-        panel.setPreferredSize(new Dimension(200, 50)); // altura fixa
+        panel.setPreferredSize(new Dimension(200, 50));
         panel.setLayout(new GridBagLayout());
         panel.setBorder(null);
         
-        
         GridBagConstraints gb1 = new GridBagConstraints();
-        gb1.gridx = c; // c
-        gb1.gridy = l; // l
-        gb1.insets = new java.awt.Insets(0, 20, 0, 20); // Espaçamento externo (MARGEM)
-        gb1.weightx = h1; // Crescer horizontalmente
-        gb1.weighty = v1; // NÃO crescer verticalmente
-        gb1.fill = GridBagConstraints.HORIZONTAL;
+        gb1.gridx = c;
+        gb1.gridy = l;
+        gb1.insets = new Insets(0, 20, 0, 20);
+        gb1.weightx = 1;
         
         label.setFont(new Font("Arial", Font.BOLD, 17));
         label.setForeground(Color.WHITE);
-        label.setBounds(0, 40, 0, 34);
-        
         
         panel.add(label, gb1);
-        
         containerButtons.add(panel, gb);
     }
-    
-    
     
     @Override
     protected void createSideBarRigth(JPanel panel) {
         super.createSideBarRigth(panel);
-        
-        JLabel l = new JLabel();
-        AuxiliaryMethod.showDateActual(sideBarRight, greenColor, l);
-    }
-    
-    
-    
-    //=============================    
-    // metodo pra exibiçao
-    //=============================    
-    public static void main(String[] args) {
 
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
+        // Limpar e configurar layout
+        sideBarRight.removeAll();
+        sideBarRight.setLayout(new BorderLayout(0, 5));
+        sideBarRight.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        // ===== PAINEL SUPERIOR (DATA ATUAL) =====
+        JPanel dataPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        dataPanel.setBackground(new Color(0xF5F5F5));
+        dataPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(0xE0E0E0), 1),
+            BorderFactory.createEmptyBorder(10, 10, 10, 10)
+        ));
+
+        JLabel dataLabel = new JLabel();
+        AuxiliaryMethod.showDateActual(dataPanel, greenColor, dataLabel);
+
+    
+        CompactCalendarPanel calendario = new CompactCalendarPanel();
+
+        // ===== MONTAR SIDEBAR =====
+        sideBarRight.add(dataPanel, BorderLayout.NORTH);
+        /*        sideBarRight.add(tituloCalendario, BorderLayout.CENTER);*/
+        sideBarRight.add(calendario, BorderLayout.SOUTH);
         
-        java.awt.EventQueue.invokeLater(() -> {
-            Scheduling s = new Scheduling();
-            
-            new SchedulingController(s);
-            
-            s.setVisible(true);
-        });
+        RoundedPanel p = new RoundedPanel();
+        
+        
+        doctorSelected = new JLabel();
+        doctorAreaSelected = new JLabel();
+        boxDoctorsSelected(p, doctorSelected, doctorAreaSelected);
     }
     
-   
+    // Método auxiliar para pegar o mês atual
+    //=============================    
+    // Elemento [ Novo Encaixe ] - Component Sidebar_Rigth
+    //=============================
+    private void boxDoctorsSelected(RoundedPanel shadowPanel, JLabel label, JLabel label1){
+        // ===== PAINEL SUPERIOR (DATA ATUAL) =====
+        containerDoctors = new JPanel(new GridBagLayout());
+        containerDoctors.setBackground(null);
+        containerDoctors.setBorder(null);
+        
+        // Configurar o shadowPanel com layout vertical
+        shadowPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        //shadowPanel.setBorder(BorderFactory.createLineBorder(new Color(0x7ED348), 2)); // Borda verde
+        shadowPanel.setBackground(null);
+        shadowPanel.setBorder(null);
+        shadowPanel.setBackground(null);
+        shadowPanel.setPreferredSize(new Dimension(0, 80));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(2, 10, 2, 10);
+
+        // Primeiro label (nome do médico)
+        gbc.gridy = 0;
+        gbc.weighty = 0;
+        label.setFont(new Font("Arial", Font.BOLD, 14));
+        label.setForeground(new Color(0x458C45));
+        label.setHorizontalAlignment(JLabel.CENTER);
+        containerDoctors.add(label, gbc);
+
+        // Segundo label (especialidade)
+        gbc.gridy = 1;
+        gbc.weighty = 1;
+        label1.setFont(new Font("Arial", Font.PLAIN, 11));
+        label1.setForeground(Color.GRAY);
+        label1.setHorizontalAlignment(JLabel.CENTER);
+        containerDoctors.add(label1, gbc);
+
+        shadowPanel.add(containerDoctors, BorderLayout.NORTH);
+        // Adicionar ao sideBarRight com margem
+        sideBarRight.add(shadowPanel);
+    }
     
-    public RoundedPanel getAllPanels(int selection){
+    public JPanel getContainerDoctors(){return containerDoctors;}
+    
+    // Getters para o Controller
+    public JLabel getLabelDoctors(int i){
+        
+        return switch (i) {
+            case 1 -> doctorSelected;
+            case 2 -> doctorAreaSelected;
+            default -> null;
+        };
+    }
+    
+    public RoundedPanel getAllPanels(int selection) {
         return switch (selection) {
             case 7 -> panBtnNovoAgendamento;
             case 8 -> panListaAgendados;
@@ -409,23 +456,30 @@ public class Scheduling extends BaseView {
         };
     }
     
-    public RoundedPanel getAllBoxDoctors(int i){
-        return switch (i){
-            case 1 -> boxDoctor_1;
-            case 2 -> boxDoctor_2;
-            case 3 -> boxDoctor_3;
-            case 4 -> boxDoctor_4;
+    public JLabel getAllLabels(int i) {
+        return switch (i) {
+            case 1 -> lblNovoAgendamento;
+            case 2 -> lblListaAgendados;
             default -> null;
         };
     }
     
-    public JLabel getAllLabesDoctors(int i){
-        return switch (i){
-            case 1 -> lbl_doctor_1;
-            case 2 -> lbl_doctor_2;
-            case 3 -> lbl_doctor_3;
-            case 4 -> lbl_doctor_4;
-            default -> null;
-        };
+    public static void main(String[] args) {
+        try {
+            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ReflectiveOperationException | UnsupportedLookAndFeelException ex) {
+            logger.log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        
+        EventQueue.invokeLater(() -> {
+            Scheduling s = new Scheduling();
+            new SchedulingController(s);
+            s.setVisible(true);
+        });
     }
 }
