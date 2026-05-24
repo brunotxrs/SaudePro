@@ -118,7 +118,7 @@ public abstract class BaseViewController {
                 if (textoLimpo.matches("\\d+") && textoLimpo.length() <= 11) {
                     // Aplicar máscara de CPF
                     AuxiliaryMethod.addMascaraDinamica(baseView.getInputSearch(), "CPF");
-                    String cpfFormatado = returnStringClear(textoLimpo);
+                    String cpfFormatado = AuxiliaryMethod.returnStringClear(textoLimpo);
                     if (!texto.equals(cpfFormatado)) {
                         baseView.getInputSearch().setText(cpfFormatado);
                     }
@@ -359,12 +359,6 @@ public abstract class BaseViewController {
         
         
         
-    }
-    
-    private static String returnStringClear(String s){
-        String input = s.trim();
-        String cleanedInput = input.replaceAll("[^0-9]", "");
-        return cleanedInput;
     }
     
 }
