@@ -501,4 +501,10 @@ public class AuxiliaryMethod {
         return input.trim().matches("\\d+");
     }
     
+    public static String returnStringClear(String s){
+        String input = s.trim();
+        String cleanedInput = input.replaceAll("[^0-9]", "");
+        return cleanedInput;
+    }
+    
 }
