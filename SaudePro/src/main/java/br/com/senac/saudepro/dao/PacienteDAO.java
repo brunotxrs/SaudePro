@@ -3,6 +3,8 @@ package br.com.senac.saudepro.dao;
 import br.com.senac.saudepro.model.Paciente;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
+import java.util.ArrayList;
+import java.util.List;
 import persistence.JPAUtil;
 
 /**
@@ -201,6 +203,27 @@ public class PacienteDAO {
         } finally {
             JPAUtil.closeEntityManager();
         }
+    }
+    
+    // Buscar os 5 últimos pacientes cadastrados (ordenados por ID decrescente)
+    public List<Paciente> getUltimosPacientes(int limite) {
+        EntityManager em = JPAUtil.getEntityManager();
+        List<Paciente> listPacientes = new ArrayList<>();
+
+        try {
+            String jpql = "SELECT p FROM Paciente p ORDER BY p.id DESC";
+            TypedQuery<Paciente> query = em.createQuery(jpql, Paciente.class);
+            query.setMaxResults(limite);  // LIMITA O RESULTADO
+
+            listPacientes = query.getResultList();
+
+        } catch (Exception e) {
+            System.err.println("Erro ao listar últimos pacientes: " + e.getMessage());
+        } finally {
+            JPAUtil.closeEntityManager();
+        }
+
+        return listPacientes;
     }
     
 }
