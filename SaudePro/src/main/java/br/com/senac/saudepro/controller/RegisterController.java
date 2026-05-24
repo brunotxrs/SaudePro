@@ -11,6 +11,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import javax.swing.JLabel;
 
 /**
@@ -356,7 +357,7 @@ public class RegisterController extends BaseViewController {
             AuxiliaryMethod.mostrarMensagemFlutuante(r, mm, 350, 80);
             
             // estado inicial
-            stateInitialize();                
+            stateInitialize();  
 
             
         } catch (HeadlessException e) {
@@ -365,8 +366,41 @@ public class RegisterController extends BaseViewController {
         
     }
     
+    // Metodo para exibição de pacientes recentes
+    private void showPacientes() {
+        // Instaciando pacienteDAO
+        PacienteDAO pdao = new PacienteDAO();
+
+        // Buscar os 5 últimos pacientes cadastrados
+        List<Paciente> ultimosPacientes = pdao.getUltimosPacientes(5);
+
+        // Primeiro, ESCONDER todos os cards
+        for (int i = 1; i <= 5; i++) {
+            r.getCardPanel(i).setVisible(false);
+        }
+
+        // Verificar se a lista não está vazia
+        if (ultimosPacientes != null && !ultimosPacientes.isEmpty()) {
+            for (int i = 0; i < ultimosPacientes.size() && i < 5; i++) {
+                Paciente p = ultimosPacientes.get(i);
+
+                // O card correspondente (i + 1 porque o índice começa em 0)
+                int cardIndex = i + 1;
+                r.getCardPanel(cardIndex).setVisible(true);
+                r.getCardsPeoples(cardIndex).setText(p.getNome());
+            }
+        } else {
+            // Se não houver pacientes, mostrar mensagem padrão
+            for (int i = 1; i <= 5; i++) {
+                r.getCardPanel(i).setVisible(true);
+                r.getCardsPeoples(i).setText("Nenhum paciente");
+            }
+        }
+    }
+    
     // metodo pra estado inicial da tela
     private void stateInitialize(){
+        
         // instancia do panciente nula
         this.pacienteOld = null;
         
@@ -380,9 +414,17 @@ public class RegisterController extends BaseViewController {
         AuxiliaryMethod.setPlaceholder(r.getAllInputs(5), "ex: paciente@paciente.com");
         r.getInpuintDetails().setText("");
         
+        r.getCardsPeoples(1).setText("");
+        r.getCardsPeoples(2).setText("");
+        r.getCardsPeoples(3).setText("");
+        r.getCardsPeoples(4).setText("");
+        r.getCardsPeoples(5).setText("");
+        
         gerenciarEstadoBotoes(false);
+        
+        showPacientes();
     }
-    
+        
     // Metodo de mensagem 
     private static String mensage(String campo, String tipo){
         String mgs ="<html>"
