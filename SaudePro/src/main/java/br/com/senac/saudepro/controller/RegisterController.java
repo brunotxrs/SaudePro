@@ -321,14 +321,34 @@ public class RegisterController extends BaseViewController {
                         +"</div>" +
                     "</html>";
             }else if("Deletar".equals(botao)){
-                pdao.deletarPorId(newPaciente.getId());
-                // recebe a mengem
-                mm = "<html>"
-                        +"<div style='text-align:center; 'width=300px'; height='45px'>" +
-                            "O Paciente: " + newPaciente.getNome() + "<br>" +
-                            "Deletado com " + "<span style='font-weight: bold;'>sucesso</span>" 
-                        +"</div>" +
-                    "</html>";
+                String show ="<html>"
+                                +"<div style='text-align:center; 'width=300px'; height='45px'>"+
+                                    "Deseja realmente " + "<span style='font-weight: bold;'>Deletar</span>" +
+                                    " este Paciente?"+"<br>"+
+                                      "<span style='font-weight: bold;'>"+newPaciente.getNome()+"</span>"
+                                +"</div>" +
+                             "</html>";
+                
+                boolean confirm = AuxiliaryMethod.mostrarConfirmacaoFlutuante(r, show, 350, 150);
+                if(confirm){
+                    pdao.deletarPorId(newPaciente.getId());
+                    // recebe a mengem
+                    mm = "<html>"
+                            +"<div style='text-align:center; 'width=300px'; height='45px'>" +
+                                "O Paciente: " + newPaciente.getNome() + "<br>" +
+                                "Deletado com " + "<span style='font-weight: bold;'>sucesso</span>" 
+                            +"</div>" +
+                        "</html>";
+                    
+                    // Lança a mensagem
+                    AuxiliaryMethod.mostrarMensagemFlutuante(r, mm, 350, 80);
+
+                    // estado inicial
+                    stateInitialize(); 
+                }
+                
+                return;
+                
             }
             
 
