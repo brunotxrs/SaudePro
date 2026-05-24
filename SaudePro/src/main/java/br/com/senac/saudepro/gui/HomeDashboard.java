@@ -8,6 +8,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -362,11 +363,26 @@ public class HomeDashboard extends BaseView {
     @Override
     protected void createSideBarRigth(JPanel panel){
         super.createSideBarRigth(panel);
-    
+        
+        // Limpar e configurar layout
+        sideBarRight.removeAll();
+        sideBarRight.setLayout(new BorderLayout(0, 5));
+        sideBarRight.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        // ===== PAINEL SUPERIOR (DATA ATUAL) =====
+        JPanel dataPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        dataPanel.setBackground(new Color(0xF5F5F5));
+        dataPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(0xE0E0E0), 1),
+            BorderFactory.createEmptyBorder(10, 10, 40, 10)
+        ));
+
+        
         // add more components
         JLabel lblNexts = new JLabel("Próximos Atendimentos");
-        AuxiliaryMethod.showDateActual(sideBarRight, greenColor, lblNexts);
+        AuxiliaryMethod.showDateActual(dataPanel, greenColor, lblNexts);
         
+        sideBarRight.add(dataPanel, BorderLayout.NORTH);
         createCards(sideBarRight, peopleCard_1, professionalCard_1, 20, 165);
         createCards(sideBarRight, peopleCard_2, professionalCard_2, 20, 314);
         
