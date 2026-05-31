@@ -9,8 +9,10 @@ import br.com.senac.saudepro.util.ShadowPanel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
@@ -24,12 +26,12 @@ public class Scheduling extends BaseView {
     private static JPanel containerDoctors;
     
     // Componentes dinâmicos para médicos
-    private JPanel panelCardsContainer;      // Container dos cards com FlowLayout
-    private JScrollPane scrollPaneMedicos;   // Scroll horizontal
-    private List<ShadowPanel> cardsMedicos = new ArrayList<>();     // Lista dinâmica de cards
-    private List<JLabel> labelsNomes = new ArrayList<>();           // Lista de nomes
-    private List<JLabel> labelsEspecialidades = new ArrayList<>();  // Lista de especialidades
-    private List<Integer> medicosIds = new ArrayList<>();           // IDs dos médicos
+    private JPanel panelCardsContainer;
+    private JScrollPane scrollPaneMedicos;
+    private List<ShadowPanel> cardsMedicos = new ArrayList<>();
+    private List<JLabel> labelsNomes = new ArrayList<>();
+    private List<JLabel> labelsEspecialidades = new ArrayList<>();
+    private List<Integer> medicosIds = new ArrayList<>();
     
     // Botões
     private static RoundedPanel panBtnNovoAgendamento;
@@ -39,7 +41,6 @@ public class Scheduling extends BaseView {
     
     private static JLabel doctorSelected;
     private static JLabel doctorAreaSelected;
-    
     
     private static JLabel lblInfo;
     
@@ -58,10 +59,19 @@ public class Scheduling extends BaseView {
     private static JLabel lblHora;
     private static JLabel i_Hora;
     private static JPanel horariosPanel;
+    private List<RoundedPanel> horarioCards = new ArrayList<>();
     
     private static String _PARTH_IMG_CALENDER = "src/main/java/resources/img/calendar_month_background.png";
     private static JLabel calendarioImagem;
     private final Color greenColor = new Color(0x458C45);
+    
+    // Cores para horários
+    public static final Color COR_HORARIO_DISPONIVEL = new Color(0xF0F8FF);
+    public static final Color COR_HORARIO_OCUPADO = new Color(0xFF6B6B);
+    public static final Color COR_HORARIO_SELECIONADO = new Color(0x7ED348);
+    
+    // Callback para quando a data mudar
+    private Runnable onDataChangeListener;
     
     public Scheduling() {
         initComponents();
@@ -116,19 +126,11 @@ public class Scheduling extends BaseView {
         
         bodyMain.add(container, gContainer);
         
-        // Container com scroll horizontal para médicos
         containerOfDoctorsDinamico();
-        
-        // Container de background (calendário)
         containerBackground();
-        
-        // Botões
         containerButton();
     }
     
-    /**
-     * Cria container com scroll horizontal para os cards de médicos
-     */
     private void containerOfDoctorsDinamico() {
         GridBagConstraints d = new GridBagConstraints();
         d.gridx = 0;
@@ -138,38 +140,28 @@ public class Scheduling extends BaseView {
         d.weighty = 0;
         d.fill = GridBagConstraints.HORIZONTAL;
         
-        // Container principal dos cards
         panelCardsContainer = new JPanel();
         panelCardsContainer.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 15));
         panelCardsContainer.setBackground(Color.WHITE);
         panelCardsContainer.setBorder(new EmptyBorder(10, 10, 10, 10));
         
-        // ScrollPane horizontal
         scrollPaneMedicos = new JScrollPane(panelCardsContainer);
         scrollPaneMedicos.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPaneMedicos.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
         scrollPaneMedicos.setBorder(null);
-        scrollPaneMedicos.setPreferredSize(new Dimension(0, 130));
-        scrollPaneMedicos.getHorizontalScrollBar().setUnitIncrement(20);
         
-        // Estilizar a barra
         JScrollBar barra = scrollPaneMedicos.getHorizontalScrollBar();
         barra.setPreferredSize(new Dimension(0, 8));
         barra.setBackground(new Color(0xF0F0F0));
         barra.setForeground(new Color(0x7ED348));
         barra.setBorder(BorderFactory.createEmptyBorder());
-
         scrollPaneMedicos.setPreferredSize(new Dimension(0, 140));
         scrollPaneMedicos.getHorizontalScrollBar().setUnitIncrement(20);
         
         container.add(scrollPaneMedicos, d);
     }
     
-    /**
-     * Cria cards dinamicamente baseado na lista de médicos
-     */
-    public void criarCardsMedicos(List<br.com.senac.saudepro.model.Medico> medicos) {
-        // Limpar cards antigos
+    public void criarCardsMedicos(List<Medico> medicos) {
         cardsMedicos.clear();
         labelsNomes.clear();
         labelsEspecialidades.clear();
@@ -177,54 +169,42 @@ public class Scheduling extends BaseView {
         panelCardsContainer.removeAll();
         
         if (medicos == null || medicos.isEmpty()) {
-            // Mostrar mensagem quando não há médicos
             JLabel msgLabel = new JLabel("Nenhum médico cadastrado no sistema");
             msgLabel.setFont(new Font("Arial", Font.PLAIN, 14));
             msgLabel.setForeground(Color.GRAY);
             panelCardsContainer.add(msgLabel);
         } else {
-            // Criar um card para cada médico
             for (Medico medico : medicos) {
                 criarCardMedico(medico);
             }
         }
         
-        // Atualizar o container
         panelCardsContainer.revalidate();
         panelCardsContainer.repaint();
     }
     
-    /**
-     * Cria um card individual para um médico
-     */
     private void criarCardMedico(Medico medico) {
-        // ShadowPanel para o card
         ShadowPanel cardPanel = new ShadowPanel(8, 15, new Color(0, 0, 0, 80));
         cardPanel.setPreferredSize(new Dimension(180, 90));
         cardPanel.setBackground(Color.WHITE);
         cardPanel.setLayout(new BorderLayout(10, 5));
         cardPanel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         
-        // Ícone do médico
         JLabel iconeLabel = new JLabel("👨‍⚕️", SwingConstants.CENTER);
         iconeLabel.setFont(new Font("Segoe UI", Font.PLAIN, 32));
         
-        // Painel de informações
         JPanel infoPanel = new JPanel(new GridLayout(3, 1, 0, 2));
         infoPanel.setOpaque(false);
         infoPanel.setBorder(new EmptyBorder(5, 0, 5, 5));
         
-        // Nome do médico
         JLabel nomeLabel = new JLabel(medico.getNome());
         nomeLabel.setFont(new Font("Arial", Font.BOLD, 12));
         nomeLabel.setForeground(Color.BLACK);
         
-        // Especialidade
         JLabel especialidadeLabel = new JLabel(medico.getEspecialidade());
         especialidadeLabel.setFont(new Font("Arial", Font.PLAIN, 10));
         especialidadeLabel.setForeground(new Color(0x458C45));
         
-        // CRM
         JLabel crmLabel = new JLabel("CRM: " + medico.getCrm());
         crmLabel.setFont(new Font("Arial", Font.PLAIN, 9));
         crmLabel.setForeground(Color.GRAY);
@@ -236,38 +216,16 @@ public class Scheduling extends BaseView {
         cardPanel.add(iconeLabel, BorderLayout.WEST);
         cardPanel.add(infoPanel, BorderLayout.CENTER);
         
-        // Armazenar referências
         cardsMedicos.add(cardPanel);
         labelsNomes.add(nomeLabel);
         labelsEspecialidades.add(especialidadeLabel);
         medicosIds.add(medico.getId());
         
-        // Adicionar ao container
         panelCardsContainer.add(cardPanel);
     }
     
-    /**
-     * Retorna o ID do médico pelo índice do card
-     */
-    public int getIdMedicoPorIndice(int indice) {
-        if (indice >= 0 && indice < medicosIds.size()) {
-            return medicosIds.get(indice);
-        }
-        return -1;
-    }
-    
-    /**
-     * Retorna a lista de cards para adicionar eventos no controller
-     */
     public List<ShadowPanel> getCardsMedicos() {
         return cardsMedicos;
-    }
-    
-    /**
-     * Retorna a lista de nomes dos médicos
-     */
-    public List<JLabel> getLabelsNomes() {
-        return labelsNomes;
     }
     
     private void containerBackground() {
@@ -279,12 +237,10 @@ public class Scheduling extends BaseView {
         b.weighty = 1;
         b.fill = GridBagConstraints.BOTH;
 
-        // Componente principal para os LABELS AGENDAMENTO
         JPanel cont = new JPanel();
         cont.setLayout(new GridBagLayout());
         cont.setBackground(null);
 
-        // ===== IMAGEM E MENSAGEM INICIAL =====
         ImageIcon icon = new ImageIcon(_PARTH_IMG_CALENDER);
         Image img = icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
         calendarioImagem = new JLabel(new ImageIcon(img));
@@ -293,7 +249,7 @@ public class Scheduling extends BaseView {
         GridBagConstraints imgConstraints = new GridBagConstraints();
         imgConstraints.gridx = 0;
         imgConstraints.gridy = 0;
-        imgConstraints.gridwidth = 4;  // Ocupa 4 colunas
+        imgConstraints.gridwidth = 4;
         imgConstraints.weightx = 1;
         imgConstraints.weighty = 1;
         imgConstraints.anchor = GridBagConstraints.CENTER;
@@ -312,10 +268,8 @@ public class Scheduling extends BaseView {
         textConstraints.insets = new Insets(5, 0, 100, 0);
         cont.add(lblInfo, textConstraints);
 
-        // ===== CAMPOS DO AGENDAMENTO (linha 2 em diante) =====
         int linhaAtual = 2;
 
-        // Linha: Médico
         lblMedico = new JLabel("Médico:*");
         i_Medico = new JLabel();
         lblMedico.setVisible(false);
@@ -325,7 +279,6 @@ public class Scheduling extends BaseView {
 
         linhaAtual++;
 
-        // Linha: Paciente e CPF
         lblPaciente = new JLabel("Paciente:*");
         i_Paciente = new JLabel();
         lblCPF = new JLabel("CPF:*");
@@ -343,7 +296,6 @@ public class Scheduling extends BaseView {
 
         linhaAtual++;
 
-        // Linha: Data e Hora
         lblData = new JLabel("Data:*");
         i_Data = new JLabel();
         lblHora = new JLabel("Hora:*");
@@ -449,16 +401,18 @@ public class Scheduling extends BaseView {
         containerButtons.add(panel, gb);
     }
     
+    public void setOnDataChangeListener(Runnable listener) {
+        this.onDataChangeListener = listener;
+    }
+    
     @Override
     protected void createSideBarRigth(JPanel panel) {
         super.createSideBarRigth(panel);
 
-        // Limpar e configurar layout
         sideBarRight.removeAll();
         sideBarRight.setLayout(new BorderLayout(0, 5));
         sideBarRight.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
 
-        // ===== PAINEL SUPERIOR (DATA ATUAL) =====
         JPanel dataPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         dataPanel.setBackground(new Color(0xF5F5F5));
         dataPanel.setBorder(BorderFactory.createCompoundBorder(
@@ -469,13 +423,17 @@ public class Scheduling extends BaseView {
         JLabel dataLabel = new JLabel();
         AuxiliaryMethod.showDateActual(dataPanel, greenColor, dataLabel);
 
-        // ===== CALENDÁRIO =====
         CompactCalendarPanel calendario = new CompactCalendarPanel();
-
-        // 🔥 CONECTA O CALENDÁRIO AO LABEL DE DATA (i_Data)
+        
+        // Configurar callback para quando a data mudar
+        calendario.setOnDataChangeListener(() -> {
+            if (onDataChangeListener != null) {
+                onDataChangeListener.run();
+            }
+        });
+        
         calendario.setDataLabelExterna(i_Data);
 
-        // ===== MONTAR SIDEBAR =====
         sideBarRight.add(dataPanel, BorderLayout.NORTH);
         sideBarRight.add(calendario, BorderLayout.SOUTH);
 
@@ -486,18 +444,11 @@ public class Scheduling extends BaseView {
         boxDoctorsSelected(p, doctorSelected, doctorAreaSelected);
     }
     
-    // Método auxiliar para pegar o mês atual
-    //=============================    
-    // Elemento - Component Sidebar_Rigth
-    //=============================
-    // Elemento - Component Sidebar_Rigth
     private void boxDoctorsSelected(RoundedPanel shadowPanel, JLabel label, JLabel label1){
-        // Container principal do médico
         containerDoctors = new JPanel(new GridBagLayout());
         containerDoctors.setBackground(null);
         containerDoctors.setBorder(null);
 
-        // Configurar o shadowPanel
         shadowPanel.setLayout(new BorderLayout(0, 10));
         shadowPanel.setBackground(null);
         shadowPanel.setBorder(null);
@@ -508,7 +459,6 @@ public class Scheduling extends BaseView {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(2, 10, 2, 10);
 
-        // Nome do médico
         gbc.gridy = 0;
         gbc.weighty = 0;
         label.setFont(new Font("Arial", Font.BOLD, 14));
@@ -516,7 +466,6 @@ public class Scheduling extends BaseView {
         label.setHorizontalAlignment(JLabel.CENTER);
         containerDoctors.add(label, gbc);
 
-        // Especialidade
         gbc.gridy = 1;
         gbc.weighty = 1;
         label1.setFont(new Font("Arial", Font.PLAIN, 11));
@@ -526,18 +475,17 @@ public class Scheduling extends BaseView {
 
         shadowPanel.add(containerDoctors, BorderLayout.NORTH);
 
-        // ===== PAINEL DE HORÁRIOS =====
         horariosPanel = new JPanel();
         horariosPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 8, 5));
         horariosPanel.setBackground(null);
         horariosPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        horarioCards.clear();
 
-        // Lista de horários
         String[] horarios = {"09:00", "10:00", "11:00", "14:00", "15:00", "16:00"};
 
         for (String horario : horarios) {
             RoundedPanel horarioCard = new RoundedPanel(10);
-            horarioCard.setBackground(new Color(0xF0F8FF));
+            horarioCard.setBackground(COR_HORARIO_DISPONIVEL);
             horarioCard.setPreferredSize(new Dimension(60, 30));
             horarioCard.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
@@ -547,49 +495,105 @@ public class Scheduling extends BaseView {
             horarioLabel.setHorizontalAlignment(JLabel.CENTER);
 
             horarioCard.add(horarioLabel);
-
-            // Evento de clique no horário
-            horarioCard.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    // Preenche o label de hora no formulário principal
-                    i_Hora.setText(horario);
-                    // Destacar horário selecionado
-                    horarioCard.setBackground(new Color(0x7ED348));
-                    horarioLabel.setForeground(Color.WHITE);
-                }
-
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    horarioCard.setBackground(new Color(0xE8F5E9));
-                    horarioLabel.setForeground(new Color(0x458C45));
-                }
-
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    if (!horarioLabel.getForeground().equals(Color.WHITE)) {
-                        horarioCard.setBackground(new Color(0xF0F8FF));
-                    }
-                }
-            });
-
+            horarioCards.add(horarioCard);
             horariosPanel.add(horarioCard);
         }
 
         horariosPanel.setVisible(false);
         shadowPanel.add(horariosPanel, BorderLayout.CENTER);
-
-        // Adicionar ao sideBarRight
         sideBarRight.add(shadowPanel);
     }
     
-    public JPanel getHorariosPanel(){return horariosPanel;}
+    public void atualizarCorHorario(int index, Color cor, Color corTexto) {
+        if (index >= 0 && index < horarioCards.size()) {
+            RoundedPanel card = horarioCards.get(index);
+            card.setBackground(cor);
+            JLabel label = (JLabel) card.getComponent(0);
+            label.setForeground(corTexto);
+            
+            if (cor.equals(COR_HORARIO_OCUPADO)) {
+                card.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                for (MouseListener ml : card.getMouseListeners()) {
+                    card.removeMouseListener(ml);
+                }
+            } else {
+                card.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            }
+        }
+    }
     
+    public void adicionarEventoHorario(int index, String horario, Consumer<String> aoClicar) {
+        if (index >= 0 && index < horarioCards.size()) {
+            RoundedPanel card = horarioCards.get(index);
+            for (MouseListener ml : card.getMouseListeners()) {
+                card.removeMouseListener(ml);
+            }
+            
+            card.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    if (!card.getBackground().equals(COR_HORARIO_OCUPADO)) {
+                        aoClicar.accept(horario);
+                    }
+                }
+                
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    if (!card.getBackground().equals(COR_HORARIO_OCUPADO) && !card.getBackground().equals(COR_HORARIO_SELECIONADO)) {
+                        card.setBackground(new Color(0xE8F5E9));
+                    }
+                }
+                
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    if (!card.getBackground().equals(COR_HORARIO_OCUPADO) && !card.getBackground().equals(COR_HORARIO_SELECIONADO)) {
+                        card.setBackground(COR_HORARIO_DISPONIVEL);
+                        ((JLabel)card.getComponent(0)).setForeground(new Color(0x458C45));
+                    }
+                }
+            });
+        }
+    }
+    
+    public void resetarCoresHorarios() {
+        for (int i = 0; i < horarioCards.size(); i++) {
+            RoundedPanel card = horarioCards.get(i);
+            if (!card.getBackground().equals(COR_HORARIO_OCUPADO)) {
+                card.setBackground(COR_HORARIO_DISPONIVEL);
+                ((JLabel)card.getComponent(0)).setForeground(new Color(0x458C45));
+            }
+        }
+    }
+    
+    public int getQuantidadeHorarios() {
+        return horarioCards.size();
+    }
+    
+    public String getHorarioPorIndex(int index) {
+        if (index >= 0 && index < horarioCards.size()) {
+            return ((JLabel)horarioCards.get(index).getComponent(0)).getText();
+        }
+        return null;
+    }
+    
+    public void marcarHorarioSelecionado(String horario) {
+        for (int i = 0; i < horarioCards.size(); i++) {
+            RoundedPanel card = horarioCards.get(i);
+            String horarioCard = ((JLabel)card.getComponent(0)).getText();
+            if (horarioCard.equals(horario)) {
+                card.setBackground(COR_HORARIO_SELECIONADO);
+                ((JLabel)card.getComponent(0)).setForeground(Color.WHITE);
+            } else if (!card.getBackground().equals(COR_HORARIO_OCUPADO)) {
+                card.setBackground(COR_HORARIO_DISPONIVEL);
+                ((JLabel)card.getComponent(0)).setForeground(new Color(0x458C45));
+            }
+        }
+    }
+    
+    public JPanel getHorariosPanel(){return horariosPanel;}
     public JPanel getContainerDoctors(){return containerDoctors;}
     
-    // Getters para o Controller
     public JLabel getLabelDoctors(int i){
-        
         return switch (i) {
             case 1 -> doctorSelected;
             case 2 -> doctorAreaSelected;
@@ -630,7 +634,6 @@ public class Scheduling extends BaseView {
             default -> null;
         };
     }
-    
     
     public static void main(String[] args) {
         try {
