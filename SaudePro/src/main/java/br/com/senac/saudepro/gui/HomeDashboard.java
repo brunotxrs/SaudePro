@@ -42,6 +42,8 @@ public class HomeDashboard extends BaseView {
     private static JLabel peopleCard_2; // -  irei precisar no Controller
     private static JLabel professionalCard_1; // -  irei precisar no Controller
     private static JLabel professionalCard_2; // -  irei precisar no Controller
+    private static ShadowPanel cardPanel_1; // Painel do card 1
+    private static ShadowPanel cardPanel_2; // Painel do card 2
     private static JLabel peopleDay; // -  irei precisar no Controller
     private static JLabel numPeoleDay;  // -  irei precisar no Controller
     private static JLabel consultDay;  // -  irei precisar no Controller
@@ -179,7 +181,7 @@ public class HomeDashboard extends BaseView {
         consultDay = new JLabel("Consultas em Aberto");
         
         numAwit = new JLabel("10");
-        awaitCall = new JLabel("Aguardando Atendimento");
+        awaitCall = new JLabel("Aguardando Confirmaçao");
         
         numMedics = new JLabel("6");
         medics = new JLabel("Médicos de Plantão");
@@ -383,8 +385,10 @@ public class HomeDashboard extends BaseView {
         AuxiliaryMethod.showDateActual(dataPanel, greenColor, lblNexts);
         
         sideBarRight.add(dataPanel, BorderLayout.NORTH);
-        createCards(sideBarRight, peopleCard_1, professionalCard_1, 20, 165);
-        createCards(sideBarRight, peopleCard_2, professionalCard_2, 20, 314);
+        
+        // Criar os cards corretamente e guardar referências
+        cardPanel_1 = createCard(sideBarRight, peopleCard_1, professionalCard_1, 20, 165);
+        cardPanel_2 = createCard(sideBarRight, peopleCard_2, professionalCard_2, 20, 314);
         
         // Componente Novo Encaixe
         
@@ -398,7 +402,7 @@ public class HomeDashboard extends BaseView {
     //=============================    
     // Cards de Proximos Atendimentos - Component Sidebar_Rigth
     //=============================
-    private void createCards(JPanel main,  JLabel u, JLabel p, int x, int y){
+    private ShadowPanel createCard(JPanel main, JLabel u, JLabel p, int x, int y){
         
         Color pretoTransparente = new Color(0, 0, 0, 80); //  transparência
 
@@ -407,20 +411,26 @@ public class HomeDashboard extends BaseView {
         // Color for shadow
         Color boxShadow = new Color(0, 0, 0, 80);
         
-        ShadowPanel cardPanel = new ShadowPanel(8, 15,boxShadow);
+        // Criar os JLabels se forem null
+        if (u == null) {
+            u = new JLabel();
+        }
+        if (p == null) {
+            p = new JLabel();
+        }
+        
+        ShadowPanel cardPanel = new ShadowPanel(8, 15, boxShadow);
         cardPanel.setLayout(null);
         cardPanel.setPreferredSize(new Dimension(260, 107));
         cardPanel.setBounds(x, y, 260, 107);
         cardPanel.setBackground(brancoGelo);
         
-        u = new JLabel("09:00 - Paciente");
         u.setFont(new Font("Arial", Font.BOLD, 17));
         u.setForeground(Color.BLACK);
         u.setBounds(0, 25, 260, 34);
         u.setVerticalAlignment(JLabel.TOP);
         u.setHorizontalAlignment(JLabel.CENTER);
         
-        p = new JLabel("Doutor");
         p.setFont(new Font("Arial", Font.BOLD, 17));
         p.setForeground(pretoTransparente);
         p.setBounds(0, 45, 260, 33);
@@ -432,6 +442,7 @@ public class HomeDashboard extends BaseView {
         
         main.add(cardPanel);
         
+        return cardPanel;
     }
 
     //=============================    
@@ -458,6 +469,15 @@ public class HomeDashboard extends BaseView {
 
         sideBarRight.add(shadowPanel);
         sideBarRight.add(label);
+    }
+    
+    // Getter para o painel do card
+    public ShadowPanel getCardPanel(int i) {
+        return switch (i) {
+            case 1 -> cardPanel_1;
+            case 2 -> cardPanel_2;
+            default -> null;
+        };
     }
 
     
@@ -520,8 +540,8 @@ public class HomeDashboard extends BaseView {
     
     public static JLabel getProfessionalCard(int profi){
         return switch (profi){
-            case 1 -> peopleCard_1;
-            case 2 -> peopleCard_2;
+            case 1 -> professionalCard_1;
+            case 2 -> professionalCard_2;
             default -> null;
         };
     }
