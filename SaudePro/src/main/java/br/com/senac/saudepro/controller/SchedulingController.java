@@ -12,6 +12,7 @@ import br.com.senac.saudepro.util.RoundedPanel;
 import br.com.senac.saudepro.util.ShadowPanel;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.HeadlessException;
@@ -26,6 +27,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import java.awt.event.MouseListener;
 
 public class SchedulingController extends BaseViewController {
     
@@ -38,11 +40,14 @@ public class SchedulingController extends BaseViewController {
     private AgendamentoDAO agendamentoDAO;
     private List<Medico> medicosList;
     private List<Agendamento> agendamentosList;
+    private List<String> horariosOcupados;
     
     private int cardSelecionado = -1;
     private final Color COR_PADRAO = Color.WHITE;
     private final Color COR_HOVER = new Color(0xb4e892);
     private final Color COR_SELECIONADO = new Color(0x7ED348);
+    private final Color COR_OCUPADO = new Color(0xFF6B6B);
+    private final Color COR_DISPONIVEL = new Color(0xF0F8FF);
     
     public SchedulingController(Scheduling view) {
         super(view);
@@ -58,6 +63,13 @@ public class SchedulingController extends BaseViewController {
         
         baseView.getInputSearch().addActionListener(d -> searchPaciente());
         configurarBotoes();
+        
+        // 🔥 LISTENER PARA QUANDO A DATA MUDAR NO CALENDÁRIO
+        view.setOnDataChangeListener(() -> {
+            if (medicoSelecionado != null) {
+                carregarHorariosOcupados();
+            }
+        });
         
         selecionarBotao(baseView.getAllBtns(3), baseView.getAllIncons(3), icoSchedN, icoSchedH, baseView.getLabelsBtns(3));
         
@@ -130,6 +142,8 @@ public class SchedulingController extends BaseViewController {
                     view.getAllLabels(1).setText("Novo Agendamento");
                     view.getAllLabels(2).setText("Lista de Agendados");
                     medicoSelecionado = medicosList.get(index);
+                    
+                    carregarHorariosOcupados();
                 }
 
                 @Override
@@ -148,6 +162,108 @@ public class SchedulingController extends BaseViewController {
             });
 
             cards.get(i).setCursor(new Cursor(Cursor.HAND_CURSOR));
+        }
+    }
+    
+    private void carregarHorariosOcupados() {
+        if (medicoSelecionado == null) return;
+        
+        String dataTexto = view.getShowLabels(8).getText();
+        if (dataTexto == null || dataTexto.equals("__/__/____")) {
+            return;
+        }
+        
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            LocalDate data = LocalDate.parse(dataTexto, formatter);
+            horariosOcupados = agendamentoDAO.buscarHorariosOcupados(medicoSelecionado, data);
+            atualizarCoresHorarios();
+        } catch (Exception e) {
+            System.err.println("Erro ao carregar horários ocupados: " + e.getMessage());
+        }
+    }
+    
+    private void atualizarCoresHorarios() {
+        JPanel horariosPanel = view.getHorariosPanel();
+        if (horariosPanel == null) return;
+        
+        Component[] components = horariosPanel.getComponents();
+        for (Component comp : components) {
+            if (comp instanceof RoundedPanel) {
+                RoundedPanel card = (RoundedPanel) comp;
+                JLabel label = (JLabel) card.getComponent(0);
+                String horario = label.getText();
+                
+                if (horariosOcupados != null && horariosOcupados.contains(horario)) {
+                    card.setBackground(COR_OCUPADO);
+                    label.setForeground(Color.WHITE);
+                    card.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                    for (MouseListener ml : card.getMouseListeners()) {
+                        card.removeMouseListener(ml);
+                    }
+                } else {
+                    card.setBackground(COR_DISPONIVEL);
+                    label.setForeground(new Color(0x458C45));
+                    card.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                    adicionarEventoHorario(card, horario);
+                }
+            }
+        }
+    }
+    
+    private void adicionarEventoHorario(RoundedPanel card, String horario) {
+        for (MouseListener ml : card.getMouseListeners()) {
+            card.removeMouseListener(ml);
+        }
+        
+        card.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (card.getBackground().equals(COR_OCUPADO)) {
+                    AuxiliaryMethod.mostrarMensagemFlutuante(view, "Horário já ocupado!", 300, 80);
+                    return;
+                }
+                view.getShowLabels(10).setText(horario);
+                resetarCoresHorarios();
+                card.setBackground(new Color(0x7ED348));
+                ((JLabel)card.getComponent(0)).setForeground(Color.WHITE);
+            }
+            
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                if (!card.getBackground().equals(COR_OCUPADO) && !card.getBackground().equals(new Color(0x7ED348))) {
+                    card.setBackground(new Color(0xE8F5E9));
+                }
+            }
+            
+            @Override
+            public void mouseExited(MouseEvent e) {
+                if (!card.getBackground().equals(COR_OCUPADO) && !card.getBackground().equals(new Color(0x7ED348))) {
+                    card.setBackground(COR_DISPONIVEL);
+                    ((JLabel)card.getComponent(0)).setForeground(new Color(0x458C45));
+                }
+            }
+        });
+    }
+    
+    private void resetarCoresHorarios() {
+        JPanel horariosPanel = view.getHorariosPanel();
+        if (horariosPanel == null) return;
+        
+        Component[] components = horariosPanel.getComponents();
+        for (Component comp : components) {
+            if (comp instanceof RoundedPanel) {
+                RoundedPanel card = (RoundedPanel) comp;
+                String horario = ((JLabel)card.getComponent(0)).getText();
+                
+                if (horariosOcupados != null && horariosOcupados.contains(horario)) {
+                    card.setBackground(COR_OCUPADO);
+                    ((JLabel)card.getComponent(0)).setForeground(Color.WHITE);
+                } else {
+                    card.setBackground(COR_DISPONIVEL);
+                    ((JLabel)card.getComponent(0)).setForeground(new Color(0x458C45));
+                }
+            }
         }
     }
     
@@ -200,6 +316,9 @@ public class SchedulingController extends BaseViewController {
         baseView.getInputSearch().setText("");
         
         showAgendamento();
+        
+        // Carregar horários ocupados ao abrir novo agendamento
+        carregarHorariosOcupados();
     }
     
     private void salvarAgendamento() {
@@ -229,6 +348,12 @@ public class SchedulingController extends BaseViewController {
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             LocalDate data = LocalDate.parse(dataTexto, formatter);
+            
+            List<String> ocupados = agendamentoDAO.buscarHorariosOcupados(medicoSelecionado, data);
+            if (ocupados.contains(horario)) {
+                AuxiliaryMethod.mostrarMensagemFlutuante(view, "Este horário já está ocupado! Selecione outro.", 450, 80);
+                return;
+            }
             
             Agendamento agendamento = new Agendamento();
             agendamento.setMedico(medicoSelecionado);
@@ -340,7 +465,7 @@ public class SchedulingController extends BaseViewController {
         
         view.getHorariosPanel().setVisible(false);
         
-        AuxiliaryMethod.mostrarMensagemFlutuante(view, "Clique em 'Deletar Agendamento' para remover", 300, 80);
+        AuxiliaryMethod.mostrarMensagemFlutuante(view, "Clique em 'Deletar Agendamento' para remover", 450, 80);
     }
     
     private void confirmarDeletarAgendamento() {
