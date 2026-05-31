@@ -1,28 +1,43 @@
 package br.com.senac.saudepro.controller;
 
+import br.com.senac.saudepro.dao.AgendamentoDAO;
 import br.com.senac.saudepro.dao.MedicoDAO;
 import br.com.senac.saudepro.dao.PacienteDAO;
 import br.com.senac.saudepro.gui.Scheduling;
+import br.com.senac.saudepro.model.Agendamento;
 import br.com.senac.saudepro.model.Medico;
 import br.com.senac.saudepro.model.Paciente;
 import br.com.senac.saudepro.util.AuxiliaryMethod;
+import br.com.senac.saudepro.util.RoundedPanel;
 import br.com.senac.saudepro.util.ShadowPanel;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Font;
 import java.awt.HeadlessException;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 public class SchedulingController extends BaseViewController {
     
     private Medico medicoSelecionado = null;
     private Paciente pacienteSelecionado = null;
+    private Agendamento agendamentoSelecionado = null;
     
     private Scheduling view;
     private MedicoDAO medicoDAO;
+    private AgendamentoDAO agendamentoDAO;
     private List<Medico> medicosList;
+    private List<Agendamento> agendamentosList;
     
     private int cardSelecionado = -1;
     private final Color COR_PADRAO = Color.WHITE;
@@ -33,6 +48,7 @@ public class SchedulingController extends BaseViewController {
         super(view);
         this.view = view;
         this.medicoDAO = new MedicoDAO();
+        this.agendamentoDAO = new AgendamentoDAO();
         start();
     }
     
@@ -40,15 +56,11 @@ public class SchedulingController extends BaseViewController {
     protected void initController() {
         super.initController();
         
-        // Configurar busca de paciente UMA ÚNICA VEZ
         baseView.getInputSearch().addActionListener(d -> searchPaciente());
-        
         configurarBotoes();
         
-        // Selecionar Inicio por padrão
         selecionarBotao(baseView.getAllBtns(3), baseView.getAllIncons(3), icoSchedN, icoSchedH, baseView.getLabelsBtns(3));
         
-        // Carregar médicos do banco
         carregarMedicos();
     }
     
@@ -64,7 +76,6 @@ public class SchedulingController extends BaseViewController {
             PacienteDAO pdao = new PacienteDAO();
             Paciente paciente = null;
             
-            // Verificar se é CPF (apenas números e 11 dígitos) ou Nome
             if (filtroLimpo.matches("\\d+") && filtroLimpo.length() == 11) {
                 paciente = pdao.getPacienteByCPF(filtroLimpo);
             } else {
@@ -80,11 +91,8 @@ public class SchedulingController extends BaseViewController {
             
             pacienteSelecionado = paciente;
             
-            // Atualizar campos na tela
             view.getShowLabels(4).setText(pacienteSelecionado.getNome());
             view.getShowLabels(6).setText(formatarCPF(pacienteSelecionado.getCpf()));
-            
-            System.out.println("PACIENTE SELECIONADO: " + pacienteSelecionado.getNome());
             
         } catch (HeadlessException e) {
             AuxiliaryMethod.mostrarMensagemFlutuante(view, "Erro ao buscar paciente: " + e.getMessage(), 300, 80);
@@ -111,7 +119,6 @@ public class SchedulingController extends BaseViewController {
             cards.get(i).addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    // Limpar seleção anterior
                     if (cardSelecionado != -1 && cardSelecionado != index) {
                         cards.get(cardSelecionado).setBackground(COR_PADRAO);
                     }
@@ -145,7 +152,6 @@ public class SchedulingController extends BaseViewController {
     }
     
     private void configurarBotoes() {
-        // Botão principal (Novo Agendamento / Salvar / Deletar)
         view.getAllPanels(7).addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -156,12 +162,11 @@ public class SchedulingController extends BaseViewController {
                 } else if (textoAtual.equals("Salvar Agendamento")) {
                     salvarAgendamento();
                 } else if (textoAtual.equals("Deletar Agendamento")) {
-                    deletarAgendamento();
+                    confirmarDeletarAgendamento();
                 }
             }
         });
         
-        // Botão secundário (Lista de Agendados / Cancelar / Voltar)
         view.getAllPanels(8).addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -176,7 +181,6 @@ public class SchedulingController extends BaseViewController {
         });
     }
     
-    // Metodo para abrir novo agendamento
     private void abrirNovoAgendamento() {
         if (medicoSelecionado == null) {
             AuxiliaryMethod.mostrarMensagemFlutuante(view, "Selecione um médico primeiro!", 300, 80);
@@ -192,14 +196,12 @@ public class SchedulingController extends BaseViewController {
         view.getAllLabels(3).setVisible(false);
         view.getAllLabels(4).setVisible(false);
         
-        // Limpar paciente selecionado anterior
         pacienteSelecionado = null;
         baseView.getInputSearch().setText("");
         
         showAgendamento();
     }
     
-    // Metodo para salvar agendamento
     private void salvarAgendamento() {
         if (medicoSelecionado == null) {
             AuxiliaryMethod.mostrarMensagemFlutuante(view, "Selecione um médico!", 300, 80);
@@ -211,33 +213,159 @@ public class SchedulingController extends BaseViewController {
             return;
         }
         
-        AuxiliaryMethod.mostrarMensagemFlutuante(view, "Agendamento salvo com sucesso!", 300, 80);
+        String dataTexto = view.getShowLabels(8).getText();
+        String horario = view.getShowLabels(10).getText();
         
-        // TODO: Salvar no banco
-        // new AgendamentoDAO().salvar(medicoSelecionado, pacienteSelecionado, data, hora);
+        if (dataTexto == null || dataTexto.equals("__/__/____")) {
+            AuxiliaryMethod.mostrarMensagemFlutuante(view, "Selecione uma data no calendário!", 300, 80);
+            return;
+        }
         
-        reloadPage();
+        if (horario == null || horario.equals("__:__")) {
+            AuxiliaryMethod.mostrarMensagemFlutuante(view, "Selecione um horário!", 300, 80);
+            return;
+        }
+        
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            LocalDate data = LocalDate.parse(dataTexto, formatter);
+            
+            Agendamento agendamento = new Agendamento();
+            agendamento.setMedico(medicoSelecionado);
+            agendamento.setPaciente(pacienteSelecionado);
+            agendamento.setDataAgendamento(data);
+            agendamento.setHorario(horario);
+            agendamento.setStatus("AGENDADO");
+            
+            agendamentoDAO.salvar(agendamento);
+            
+            AuxiliaryMethod.mostrarMensagemFlutuante(view, "Agendamento salvo com sucesso!", 300, 80);
+            
+            reloadPage();
+            
+        } catch (Exception e) {
+            AuxiliaryMethod.mostrarMensagemFlutuante(view, "Erro ao salvar: " + e.getMessage(), 300, 80);
+        }
     }
     
-    // Metodo para deletelar agendamento 
-    private void deletarAgendamento() {
-        AuxiliaryMethod.mostrarMensagemFlutuante(view, "Deletando agendamento...", 300, 80);
-        // TODO: Implementar delete
-        reloadPage();
-    }
-    
-    // metodo para abrir lista de agendados
     private void abrirListaAgendados() {
+        if (medicoSelecionado == null) {
+            AuxiliaryMethod.mostrarMensagemFlutuante(view, "Selecione um médico primeiro!", 300, 80);
+            return;
+        }
+        
+        agendamentosList = agendamentoDAO.buscarPorMedico(medicoSelecionado);
+        
+        if (agendamentosList.isEmpty()) {
+            AuxiliaryMethod.mostrarMensagemFlutuante(view, "Nenhum agendamento encontrado para este médico!", 300, 80);
+            return;
+        }
+        
         boxDoctor();
         view.getAllLabels(1).setText("Deletar Agendamento");
         view.getAllPanels(7).setBackground(new Color(0xE11D48));
         view.getAllLabels(2).setText("Voltar");
-        view.getAllLabels(4).setText("Selecione um horário para visualizar o agendamento");
-        AuxiliaryMethod.mostrarMensagemFlutuante(view, "Mostrando lista de agendados...", 300, 80);
+        view.getAllLabels(3).setVisible(false);
+        view.getAllLabels(4).setVisible(false);
+        
+        mostrarListaAgendamentos();
     }
     
+    private void mostrarListaAgendamentos() {
+        JPanel listaPanel = new JPanel();
+        listaPanel.setLayout(new BoxLayout(listaPanel, BoxLayout.Y_AXIS));
+        listaPanel.setBackground(Color.WHITE);
+        listaPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        
+        for (Agendamento a : agendamentosList) {
+            RoundedPanel card = new RoundedPanel(10);
+            card.setBackground(new Color(0xF0F8FF));
+            card.setLayout(new BorderLayout());
+            card.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            card.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+            
+            JLabel info = new JLabel("<html><b>" + a.getPaciente().getNome() + "</b><br>" +
+                    a.getDataAgendamento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " às " + a.getHorario() + "<br>" +
+                    "Status: " + a.getStatus() + "</html>");
+            info.setFont(new Font("Arial", Font.PLAIN, 12));
+            
+            card.add(info, BorderLayout.CENTER);
+            
+            card.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    agendamentoSelecionado = a;
+                    mostrarDetalhesAgendamento();
+                }
+                
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    card.setBackground(new Color(0xE8F5E9));
+                }
+                
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    card.setBackground(new Color(0xF0F8FF));
+                }
+            });
+            
+            listaPanel.add(card);
+            listaPanel.add(Box.createVerticalStrut(5));
+        }
+        
+        JScrollPane scrollPane = new JScrollPane(listaPanel);
+        scrollPane.setBorder(null);
+        
+        view.getHorariosPanel().removeAll();
+        view.getHorariosPanel().setLayout(new BorderLayout());
+        view.getHorariosPanel().add(scrollPane, BorderLayout.CENTER);
+        view.getHorariosPanel().setVisible(true);
+    }
     
-    // tornando os btns em novos estados
+    private void mostrarDetalhesAgendamento() {
+        if (agendamentoSelecionado == null) return;
+        
+        view.getAllLabels(1).setText("Deletar Agendamento");
+        view.getAllPanels(7).setBackground(new Color(0xE11D48));
+        
+        for (int i = 1; i <= 10; i++) {
+            view.getShowLabels(i).setVisible(true);
+        }
+        
+        view.getShowLabels(2).setText(agendamentoSelecionado.getMedico().getNome());
+        view.getShowLabels(4).setText(agendamentoSelecionado.getPaciente().getNome());
+        view.getShowLabels(6).setText(formatarCPF(agendamentoSelecionado.getPaciente().getCpf()));
+        view.getShowLabels(8).setText(agendamentoSelecionado.getDataAgendamento().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        view.getShowLabels(10).setText(agendamentoSelecionado.getHorario());
+        
+        view.getHorariosPanel().setVisible(false);
+        
+        AuxiliaryMethod.mostrarMensagemFlutuante(view, "Clique em 'Deletar Agendamento' para remover", 300, 80);
+    }
+    
+    private void confirmarDeletarAgendamento() {
+        if (agendamentoSelecionado == null) {
+            AuxiliaryMethod.mostrarMensagemFlutuante(view, "Selecione um agendamento na lista!", 300, 80);
+            return;
+        }
+        
+        boolean confirm = AuxiliaryMethod.mostrarConfirmacaoFlutuante(
+            view,
+            "Deseja realmente deletar o agendamento de " + agendamentoSelecionado.getPaciente().getNome() + "?",
+            350, 150
+        );
+        
+        if (confirm) {
+            agendamentoDAO.deletar(agendamentoSelecionado.getId());
+            AuxiliaryMethod.mostrarMensagemFlutuante(view, "Agendamento deletado com sucesso!", 300, 80);
+            reloadPage();
+        }
+    }
+    
+    private void deletarAgendamento() {
+        confirmarDeletarAgendamento();
+    }
+    
     private void novoEstadoBotoes() {
         view.getAllPanels(7).setEnabled(true);
         view.getAllPanels(8).setEnabled(true);
@@ -247,7 +375,6 @@ public class SchedulingController extends BaseViewController {
         view.getAllPanels(8).setCursor(new Cursor(Cursor.HAND_CURSOR));
     }
     
-    // metodo para reload na page
     private void reloadPage() {
         Scheduling s = new Scheduling();
         new SchedulingController(s);
@@ -255,7 +382,6 @@ public class SchedulingController extends BaseViewController {
         view.dispose();
     }
     
-    // Metodo para exibiçao do Medico seleciondo e seus Horarios
     private void boxDoctor() {
         view.getContainerDoctors().setBackground(new Color(0xF5F5F5));
         view.getContainerDoctors().setBorder(BorderFactory.createCompoundBorder(
@@ -266,16 +392,14 @@ public class SchedulingController extends BaseViewController {
         view.getLabelDoctors(1).setText(medicoSelecionado.getNome());
         view.getLabelDoctors(2).setText(medicoSelecionado.getEspecialidade());
         
-        view.getHorariosPanel().setVisible(true); // tornando visivel o campo dos horarios
+        view.getHorariosPanel().setVisible(true);
     }
     
     private void showAgendamento() {
-        // Mostrar todos os campos
         for (int i = 1; i <= 10; i++) {
             view.getShowLabels(i).setVisible(true);
         }
         
-        // Preencher com dados
         view.getShowLabels(2).setText(medicoSelecionado != null ? medicoSelecionado.getNome() : "---");
         view.getShowLabels(4).setText(pacienteSelecionado != null ? pacienteSelecionado.getNome() : "Busque um paciente acima");
         view.getShowLabels(6).setText(pacienteSelecionado != null ? formatarCPF(pacienteSelecionado.getCpf()) : "---");
