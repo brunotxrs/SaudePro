@@ -9,7 +9,15 @@ import javax.swing.border.EmptyBorder;
 
 public class CompactCalendarPanel extends JPanel {
     
+    private LocalDate dataSelecionada;
+    private JLabel dataLabelExterna; // Label que será preenchida fora do calendário
+    private JLabel mesLabel;
+    private JPanel daysPanel;
+    private YearMonth anoMesAtual;
+    
     public CompactCalendarPanel() {
+        dataSelecionada = LocalDate.now();
+        anoMesAtual = YearMonth.now();
         setLayout(new BorderLayout());
         setBackground(Color.WHITE);
         setBorder(BorderFactory.createCompoundBorder(
@@ -18,19 +26,59 @@ public class CompactCalendarPanel extends JPanel {
         ));
         
         initComponents();
+        atualizarCalendario();
+    }
+    
+    /**
+     * Define o JLabel externo que receberá a data selecionada
+     */
+    public void setDataLabelExterna(JLabel label) {
+        this.dataLabelExterna = label;
     }
     
     private void initComponents() {
-        LocalDate hoje = LocalDate.now();
+        // Painel superior com navegação
+        JPanel headerPanel = new JPanel(new BorderLayout());
+        headerPanel.setBackground(Color.WHITE);
+        headerPanel.setBorder(new EmptyBorder(0, 0, 5, 0));
+        
+        // Botão anterior
+        JLabel btnAnterior = new JLabel("◀");
+        btnAnterior.setFont(new Font("Arial", Font.BOLD, 10));
+        btnAnterior.setForeground(new Color(0x7ED348));
+        btnAnterior.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnAnterior.setBorder(new EmptyBorder(0, 5, 0, 5));
+        btnAnterior.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                anoMesAtual = anoMesAtual.minusMonths(1);
+                atualizarCalendario();
+            }
+        });
         
         // Mês/Ano
-        JLabel mesLabel = new JLabel();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM/yyyy");
-        mesLabel.setText(formatter.format(hoje).toUpperCase());
+        mesLabel = new JLabel();
         mesLabel.setFont(new Font("Arial", Font.BOLD, 11));
         mesLabel.setForeground(new Color(0x7ED348));
         mesLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        mesLabel.setBorder(new EmptyBorder(0, 0, 5, 0));
+        
+        // Botão próximo
+        JLabel btnProximo = new JLabel("▶");
+        btnProximo.setFont(new Font("Arial", Font.BOLD, 10));
+        btnProximo.setForeground(new Color(0x7ED348));
+        btnProximo.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnProximo.setBorder(new EmptyBorder(0, 5, 0, 5));
+        btnProximo.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent e) {
+                anoMesAtual = anoMesAtual.plusMonths(1);
+                atualizarCalendario();
+            }
+        });
+        
+        headerPanel.add(btnAnterior, BorderLayout.WEST);
+        headerPanel.add(mesLabel, BorderLayout.CENTER);
+        headerPanel.add(btnProximo, BorderLayout.EAST);
         
         // Dias da semana
         JPanel weekPanel = new JPanel(new GridLayout(1, 7, 1, 1));
@@ -43,13 +91,25 @@ public class CompactCalendarPanel extends JPanel {
             weekPanel.add(label);
         }
         
-        // Dias do mês
-        JPanel daysPanel = new JPanel(new GridLayout(0, 7, 1, 1));
+        // Painel dos dias
+        daysPanel = new JPanel(new GridLayout(0, 7, 1, 1));
         daysPanel.setBackground(Color.WHITE);
         
-        YearMonth yearMonth = YearMonth.of(hoje.getYear(), hoje.getMonth());
-        int primeiroDia = yearMonth.atDay(1).getDayOfWeek().getValue() % 7;
-        int diasNoMes = yearMonth.lengthOfMonth();
+        add(headerPanel, BorderLayout.NORTH);
+        add(weekPanel, BorderLayout.CENTER);
+        add(daysPanel, BorderLayout.SOUTH);
+    }
+    
+    private void atualizarCalendario() {
+        // Atualizar título
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM/yyyy");
+        mesLabel.setText(formatter.format(anoMesAtual).toUpperCase());
+        
+        // Limpar dias
+        daysPanel.removeAll();
+        
+        int primeiroDia = anoMesAtual.atDay(1).getDayOfWeek().getValue() % 7;
+        int diasNoMes = anoMesAtual.lengthOfMonth();
         
         // Dias vazios
         for (int i = 0; i < primeiroDia; i++) {
@@ -60,12 +120,15 @@ public class CompactCalendarPanel extends JPanel {
         
         // Dias do mês
         for (int dia = 1; dia <= diasNoMes; dia++) {
-            LocalDate dataDia = LocalDate.of(hoje.getYear(), hoje.getMonth(), dia);
+            LocalDate dataDia = LocalDate.of(anoMesAtual.getYear(), anoMesAtual.getMonth(), dia);
             JLabel diaLabel = new JLabel(String.valueOf(dia), SwingConstants.CENTER);
             diaLabel.setFont(new Font("Arial", Font.PLAIN, 9));
             diaLabel.setPreferredSize(new Dimension(25, 22));
             diaLabel.setOpaque(true);
+            diaLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
             
+            // Verificar se é o dia atual
+            LocalDate hoje = LocalDate.now();
             if (dataDia.equals(hoje)) {
                 diaLabel.setBackground(new Color(0x7ED348));
                 diaLabel.setForeground(Color.WHITE);
@@ -75,11 +138,82 @@ public class CompactCalendarPanel extends JPanel {
                 diaLabel.setForeground(Color.BLACK);
             }
             
+            // Adicionar evento de clique
+            final LocalDate dataClicada = dataDia;
+            diaLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+                @Override
+                public void mouseClicked(java.awt.event.MouseEvent e) {
+                    dataSelecionada = dataClicada;
+                    
+                    // Formatar data para exibição
+                    DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                    String dataFormatada = dataClicada.format(fmt);
+                    
+                    // Preencher o label externo se existir
+                    if (dataLabelExterna != null) {
+                        dataLabelExterna.setText(dataFormatada);
+                    }
+                    
+                    // Destacar o dia selecionado
+                    destacarDiaSelecionado(dataClicada);
+                    
+                    System.out.println("Data selecionada: " + dataFormatada);
+                }
+                
+                @Override
+                public void mouseEntered(java.awt.event.MouseEvent e) {
+                    if (!dataClicada.equals(dataSelecionada) && !dataClicada.equals(hoje)) {
+                        diaLabel.setBackground(new Color(0xE8F5E9));
+                    }
+                }
+                
+                @Override
+                public void mouseExited(java.awt.event.MouseEvent e) {
+                    if (!dataClicada.equals(dataSelecionada) && !dataClicada.equals(hoje)) {
+                        diaLabel.setBackground(Color.WHITE);
+                    }
+                }
+            });
+            
             daysPanel.add(diaLabel);
         }
         
-        add(mesLabel, BorderLayout.NORTH);
-        add(weekPanel, BorderLayout.CENTER);
-        add(daysPanel, BorderLayout.SOUTH);
+        daysPanel.revalidate();
+        daysPanel.repaint();
+    }
+    
+    private void destacarDiaSelecionado(LocalDate data) {
+        // Resetar cores e destacar a data selecionada
+        Component[] components = daysPanel.getComponents();
+        int index = 0;
+        
+        for (int dia = 1; dia <= anoMesAtual.lengthOfMonth(); dia++) {
+            int posicao = (anoMesAtual.atDay(1).getDayOfWeek().getValue() % 7) + dia - 1;
+            if (posicao >= 0 && posicao < components.length) {
+                JLabel label = (JLabel) components[posicao];
+                LocalDate dataDia = LocalDate.of(anoMesAtual.getYear(), anoMesAtual.getMonth(), dia);
+                
+                if (dataDia.equals(data)) {
+                    label.setBackground(Color.BLUE); // color de seleçao do dia
+                    label.setForeground(Color.WHITE);
+                    label.setFont(new Font("Arial", Font.BOLD, 9));
+                } else if (dataDia.equals(LocalDate.now())) {
+                    label.setBackground(new Color(0x7ED348));
+                    label.setForeground(Color.WHITE);
+                    label.setFont(new Font("Arial", Font.BOLD, 9));
+                } else {
+                    label.setBackground(Color.WHITE);
+                    label.setForeground(Color.BLACK);
+                    label.setFont(new Font("Arial", Font.PLAIN, 9));
+                }
+            }
+        }
+    }
+    
+    /**
+     * Retorna a data selecionada
+     */
+    public LocalDate getDataSelecionada() {
+        return dataSelecionada;
     }
 }
