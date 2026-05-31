@@ -10,10 +10,11 @@ import javax.swing.border.EmptyBorder;
 public class CompactCalendarPanel extends JPanel {
     
     private LocalDate dataSelecionada;
-    private JLabel dataLabelExterna; // Label que será preenchida fora do calendário
+    private JLabel dataLabelExterna;
     private JLabel mesLabel;
     private JPanel daysPanel;
     private YearMonth anoMesAtual;
+    private Runnable onDataChangeListener;
     
     public CompactCalendarPanel() {
         dataSelecionada = LocalDate.now();
@@ -29,20 +30,19 @@ public class CompactCalendarPanel extends JPanel {
         atualizarCalendario();
     }
     
-    /**
-     * Define o JLabel externo que receberá a data selecionada
-     */
     public void setDataLabelExterna(JLabel label) {
         this.dataLabelExterna = label;
     }
     
+    public void setOnDataChangeListener(Runnable listener) {
+        this.onDataChangeListener = listener;
+    }
+    
     private void initComponents() {
-        // Painel superior com navegação
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(Color.WHITE);
         headerPanel.setBorder(new EmptyBorder(0, 0, 5, 0));
         
-        // Botão anterior
         JLabel btnAnterior = new JLabel("◀");
         btnAnterior.setFont(new Font("Arial", Font.BOLD, 10));
         btnAnterior.setForeground(new Color(0x7ED348));
@@ -56,13 +56,11 @@ public class CompactCalendarPanel extends JPanel {
             }
         });
         
-        // Mês/Ano
         mesLabel = new JLabel();
         mesLabel.setFont(new Font("Arial", Font.BOLD, 11));
         mesLabel.setForeground(new Color(0x7ED348));
         mesLabel.setHorizontalAlignment(SwingConstants.CENTER);
         
-        // Botão próximo
         JLabel btnProximo = new JLabel("▶");
         btnProximo.setFont(new Font("Arial", Font.BOLD, 10));
         btnProximo.setForeground(new Color(0x7ED348));
@@ -80,7 +78,6 @@ public class CompactCalendarPanel extends JPanel {
         headerPanel.add(mesLabel, BorderLayout.CENTER);
         headerPanel.add(btnProximo, BorderLayout.EAST);
         
-        // Dias da semana
         JPanel weekPanel = new JPanel(new GridLayout(1, 7, 1, 1));
         weekPanel.setBackground(Color.WHITE);
         String[] dias = {"D", "S", "T", "Q", "Q", "S", "S"};
@@ -91,7 +88,6 @@ public class CompactCalendarPanel extends JPanel {
             weekPanel.add(label);
         }
         
-        // Painel dos dias
         daysPanel = new JPanel(new GridLayout(0, 7, 1, 1));
         daysPanel.setBackground(Color.WHITE);
         
@@ -101,24 +97,22 @@ public class CompactCalendarPanel extends JPanel {
     }
     
     private void atualizarCalendario() {
-        // Atualizar título
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM/yyyy");
         mesLabel.setText(formatter.format(anoMesAtual).toUpperCase());
         
-        // Limpar dias
         daysPanel.removeAll();
         
         int primeiroDia = anoMesAtual.atDay(1).getDayOfWeek().getValue() % 7;
         int diasNoMes = anoMesAtual.lengthOfMonth();
         
-        // Dias vazios
         for (int i = 0; i < primeiroDia; i++) {
             JLabel empty = new JLabel("");
             empty.setPreferredSize(new Dimension(25, 22));
             daysPanel.add(empty);
         }
         
-        // Dias do mês
+        LocalDate hoje = LocalDate.now();
+        
         for (int dia = 1; dia <= diasNoMes; dia++) {
             LocalDate dataDia = LocalDate.of(anoMesAtual.getYear(), anoMesAtual.getMonth(), dia);
             JLabel diaLabel = new JLabel(String.valueOf(dia), SwingConstants.CENTER);
@@ -127,8 +121,6 @@ public class CompactCalendarPanel extends JPanel {
             diaLabel.setOpaque(true);
             diaLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
             
-            // Verificar se é o dia atual
-            LocalDate hoje = LocalDate.now();
             if (dataDia.equals(hoje)) {
                 diaLabel.setBackground(new Color(0x7ED348));
                 diaLabel.setForeground(Color.WHITE);
@@ -138,24 +130,25 @@ public class CompactCalendarPanel extends JPanel {
                 diaLabel.setForeground(Color.BLACK);
             }
             
-            // Adicionar evento de clique
             final LocalDate dataClicada = dataDia;
             diaLabel.addMouseListener(new java.awt.event.MouseAdapter() {
                 @Override
                 public void mouseClicked(java.awt.event.MouseEvent e) {
                     dataSelecionada = dataClicada;
                     
-                    // Formatar data para exibição
                     DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                     String dataFormatada = dataClicada.format(fmt);
                     
-                    // Preencher o label externo se existir
                     if (dataLabelExterna != null) {
                         dataLabelExterna.setText(dataFormatada);
                     }
                     
-                    // Destacar o dia selecionado
                     destacarDiaSelecionado(dataClicada);
+                    
+                    // 🔥 NOTIFICAR O LISTENER QUANDO A DATA MUDAR
+                    if (onDataChangeListener != null) {
+                        onDataChangeListener.run();
+                    }
                     
                     System.out.println("Data selecionada: " + dataFormatada);
                 }
@@ -183,9 +176,7 @@ public class CompactCalendarPanel extends JPanel {
     }
     
     private void destacarDiaSelecionado(LocalDate data) {
-        // Resetar cores e destacar a data selecionada
         Component[] components = daysPanel.getComponents();
-        int index = 0;
         
         for (int dia = 1; dia <= anoMesAtual.lengthOfMonth(); dia++) {
             int posicao = (anoMesAtual.atDay(1).getDayOfWeek().getValue() % 7) + dia - 1;
@@ -194,7 +185,7 @@ public class CompactCalendarPanel extends JPanel {
                 LocalDate dataDia = LocalDate.of(anoMesAtual.getYear(), anoMesAtual.getMonth(), dia);
                 
                 if (dataDia.equals(data)) {
-                    label.setBackground(Color.BLUE); // color de seleçao do dia
+                    label.setBackground(Color.BLUE);
                     label.setForeground(Color.WHITE);
                     label.setFont(new Font("Arial", Font.BOLD, 9));
                 } else if (dataDia.equals(LocalDate.now())) {
@@ -210,9 +201,6 @@ public class CompactCalendarPanel extends JPanel {
         }
     }
     
-    /**
-     * Retorna a data selecionada
-     */
     public LocalDate getDataSelecionada() {
         return dataSelecionada;
     }
