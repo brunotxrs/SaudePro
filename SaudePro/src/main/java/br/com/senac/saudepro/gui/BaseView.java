@@ -72,11 +72,6 @@ public abstract class BaseView extends JFrame {
     private static final GridBagLayout gLayout = new GridBagLayout();
     private static GridBagConstraints gbc;
     
-    public BaseView(){
-    
-    }
-    
-    
     //=============================    
     // configuraçao o Jrame
     //=============================    
